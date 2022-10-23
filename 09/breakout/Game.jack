@@ -1,0 +1,60 @@
+
+/**
+ * Implements the breakout game.
+ */
+
+class Game {
+   field Player player; // the player of this game
+   field int direction; // the player's current direction: 
+                        // 1=left, 2=right
+
+   /** Constructs a new breakout Game. */
+   constructor Game new() {
+      // setup screen
+		do Screen.clearScreen();
+      do Screen.setColor(true);
+      do Screen.drawLine(0, 248, 511, 248);
+      let player = Player.new(248, 230);
+      let direction = 0;  // initial state is no movement
+      return this;
+   }
+
+   /** Disposes this game. */
+   method void dispose() {
+      do player.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Moves the player in the current direction. */
+   method void movePlayer() {
+      if (direction = 1) { do player.moveLeft(); }
+      if (direction = 2) { do player.moveRight(); }
+      do Sys.wait(5);  // delays the next movement
+      return;
+   }
+
+   /** Runs the game: handles the user's inputs and moves the player accordingly */
+   method void run() {
+      var char key;  // the key currently pressed by the user
+      var boolean exit;
+      let exit = false;
+      
+      while (~exit) {
+         // waits for a key to be pressed
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+         }
+         if (key = 81)  { let exit = true; }     // q key
+         if (key = 130) { let direction = 1; }   // left arrow
+         if (key = 132) { let direction = 2; }   // right arrow
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            do movePlayer();
+         }
+     } // while
+     return;
+   }
+}

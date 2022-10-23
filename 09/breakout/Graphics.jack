@@ -1,0 +1,14 @@
+class Graphics {	
+	function void drawPlayer(int x, int y) {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
+		return;
+	}
+
+
+	function void erasePlayer(int x, int y) {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + 30, y + 30);
+		return;
+	}
+}
