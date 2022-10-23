@@ -22,10 +22,10 @@ pop temp 0
 push argument 0
 push argument 1
 push argument 0
-push constant 30
+push constant 50
 add
 push argument 1
-push constant 30
+push constant 10
 add
 call Screen.drawRectangle 4
 pop temp 0

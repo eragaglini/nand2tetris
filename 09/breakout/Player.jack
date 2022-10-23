@@ -42,7 +42,8 @@ class Player {
 
    /** Moves the player right by 2 pixels. */
     method void moveRight() {
-        if (x < 510) {
+        //if (x < 510) {
+         if (x < 460) {
             do erase();
             let x = x + 2;
             do Graphics.drawPlayer(x,y);

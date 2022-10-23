@@ -64,7 +64,7 @@ function Player.moveRight 0
 push argument 0
 pop pointer 0
 push this 0
-push constant 510
+push constant 460
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
