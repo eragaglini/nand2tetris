@@ -8,7 +8,7 @@ class Graphics {
 
 	function void erasePlayer(int x, int y) {
 		do Screen.setColor(false);
-		do Screen.drawRectangle(x, y, x + 30, y + 30);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
 		return;
 	}
 }
