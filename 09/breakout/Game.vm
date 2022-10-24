@@ -1,5 +1,5 @@
 function Game.new 0
-push constant 2
+push constant 3
 call Memory.alloc 1
 pop pointer 0
 call Screen.clearScreen 0
@@ -14,10 +14,15 @@ push constant 511
 push constant 248
 call Screen.drawLine 4
 pop temp 0
-push constant 248
+push constant 231
 push constant 230
 call Player.new 2
 pop this 0
+push constant 256
+push constant 219
+push constant 10
+call Ball.new 3
+pop this 2
 push constant 0
 pop this 1
 push pointer 0
@@ -67,20 +72,31 @@ pop pointer 0
 push constant 0
 pop local 1
 label WHILE_EXP0
-push local 1
+push local 0
+push constant 32
+eq
 not
 not
 if-goto WHILE_END0
+call Keyboard.keyPressed 0
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
 label WHILE_EXP1
+push local 1
+not
+not
+if-goto WHILE_END1
+label WHILE_EXP2
 push local 0
 push constant 0
 eq
 not
-if-goto WHILE_END1
+if-goto WHILE_END2
 call Keyboard.keyPressed 0
 pop local 0
-goto WHILE_EXP1
-label WHILE_END1
+goto WHILE_EXP2
+label WHILE_END2
 push local 0
 push constant 81
 eq
@@ -109,21 +125,21 @@ label IF_TRUE2
 push constant 2
 pop this 1
 label IF_FALSE2
-label WHILE_EXP2
+label WHILE_EXP3
 push local 0
 push constant 0
 eq
 not
 not
-if-goto WHILE_END2
+if-goto WHILE_END3
 call Keyboard.keyPressed 0
 pop local 0
 push pointer 0
 call Game.movePlayer 1
 pop temp 0
-goto WHILE_EXP2
-label WHILE_END2
-goto WHILE_EXP0
-label WHILE_END0
+goto WHILE_EXP3
+label WHILE_END3
+goto WHILE_EXP1
+label WHILE_END1
 push constant 0
 return

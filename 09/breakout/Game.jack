@@ -7,6 +7,7 @@ class Game {
    field Player player; // the player of this game
    field int direction; // the player's current direction: 
                         // 1=left, 2=right
+   field Ball ball; // ball
 
    /** Constructs a new breakout Game. */
    constructor Game new() {
@@ -14,7 +15,10 @@ class Game {
 		do Screen.clearScreen();
       do Screen.setColor(true);
       do Screen.drawLine(0, 248, 511, 248);
-      let player = Player.new(248, 230);
+      let player = Player.new(231, 230);
+
+      let ball = Ball.new(256, 219, 10);
+
       let direction = 0;  // initial state is no movement
       return this;
    }
@@ -39,6 +43,11 @@ class Game {
       var char key;  // the key currently pressed by the user
       var boolean exit;
       let exit = false;
+
+      // wait for space to start
+      while (~(key = 32)) {
+         let key = Keyboard.keyPressed();
+      }
       
       while (~exit) {
          // waits for a key to be pressed

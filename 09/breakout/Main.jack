@@ -1,8 +1,6 @@
 class Main {
     function void main() {
         var Game game;
-
-        do Startscreen.go();
         let game = Game.new();
         do game.run();
         do game.dispose();

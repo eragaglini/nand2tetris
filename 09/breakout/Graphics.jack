@@ -11,4 +11,16 @@ class Graphics {
 		do Screen.drawRectangle(x, y, x + 50, y + 10);
 		return;
 	}
+
+	function void drawBall(int x, int y, int r) {
+		do Screen.setColor(true);
+		do Screen.drawCircle(x,y,r);
+		return;
+	}
+
+	function void eraseBall(int x, int y, int r) {
+		do Screen.setColor(false);
+		do Screen.drawCircle(x,y,r);
+		return;
+	}
 }

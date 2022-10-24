@@ -1,0 +1,38 @@
+
+/** Implements a graphical ball. */
+class Ball {
+
+   field int x, y, r; // screen location of the center of the ball
+
+   /** Constructs a new player with a given location. */
+   constructor Ball new(int Ax, int Ay, int Ar) {
+      let x = Ax;
+      let y = Ay;
+      let r = Ar;
+      do draw();
+      return this;
+   }
+
+   /** Disposes this ball. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the ball on the screen. */
+   method void draw() {
+      do Graphics.drawBall(x,y,r);
+      return;
+   }
+
+   /** Erases the player from the screen. */
+   method void erase() {
+      do Graphics.eraseBall(x,y,r);
+      return;
+   }
+
+   /** Moves the player left by 2 pixels. */
+   method void move() {
+        return;
+   }
+}
