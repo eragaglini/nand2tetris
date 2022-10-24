@@ -42,6 +42,22 @@ class Ball {
     return;
    }
 
+
+   method bool check_collision_with_walls() {
+    var bool fail;
+    let fail = false;
+    if ((x = 10) | (x = 501)) {
+        do bounce(true, false);
+    }
+    if (y = 10) {
+        do bounce(false, true);
+    }
+    if (y < 240) {
+        let fail = true;
+    }
+    return fail;
+   }
+
     
     method void bounce(bool x_bounce, bool y_bounce) {
         if (x_bounce) {
