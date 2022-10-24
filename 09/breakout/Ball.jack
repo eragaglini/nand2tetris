@@ -2,13 +2,15 @@
 /** Implements a graphical ball. */
 class Ball {
 
-   field int x, y, r; // screen location of the center of the ball
+   field int x, y, r, x_move_dist, y_move_dist; // screen location of the center of the ball
 
    /** Constructs a new player with a given location. */
-   constructor Ball new(int Ax, int Ay, int Ar) {
+   constructor Ball new(int Ax, int Ay, int Ar, int move_dist) {
       let x = Ax;
       let y = Ay;
       let r = Ar;
+      let x_move_dist = move_dist;
+      let y_move_dist = move_dist;
       do draw();
       return this;
    }
@@ -33,6 +35,22 @@ class Ball {
 
    /** Moves the player left by 2 pixels. */
    method void move() {
-        return;
+    do erase();
+    let x = x + x_move_dist;
+    let y = y + y_move_dist;
+    do draw();
+    return;
    }
+
+    
+    method void bounce(bool x_bounce, bool y_bounce) {
+        if (x_bounce) {
+            let x_move_dist = x_move_dist * -1;
+        }
+ 
+        if (y_bounce) {
+            let y_move_dist = y_move_dist * -1;
+        }
+        return;
+    }
 }

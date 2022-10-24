@@ -1,0 +1,53 @@
+
+/** Implements a graphical Paddle. */
+class Paddle {
+
+   field int x, y; // screen location of the Paddle's top-left corner
+
+   /** Constructs a new Paddle with a given location. */
+   constructor Paddle new(int Ax, int Ay) {
+      let x = Ax;
+      let y = Ay;
+      do draw();
+      return this;
+   }
+
+   /** Disposes this Paddle. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the Paddle on the screen. */
+   method void draw() {
+      do Graphics.drawPaddle(x,y);
+      return;
+   }
+
+   /** Erases the Paddle from the screen. */
+   method void erase() {
+      do Graphics.erasePaddle(x,y);
+      return;
+   }
+
+   /** Moves the Paddle left by 2 pixels. */
+   method void moveLeft() {
+        if (x > 1) {
+            do erase();
+            let x = x - 2;
+            do Graphics.drawPaddle(x,y);
+        }
+        return;
+   }
+
+   /** Moves the Paddle right by 2 pixels. */
+    method void moveRight() {
+        //if (x < 510) {
+         if (x < 460) {
+            do erase();
+            let x = x + 2;
+            do Graphics.drawPaddle(x,y);
+        }
+        return;
+    }
+}
