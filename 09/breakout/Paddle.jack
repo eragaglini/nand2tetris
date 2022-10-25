@@ -5,11 +5,19 @@ class Paddle {
    field int x, y; // screen location of the Paddle's top-left corner
 
    /** Constructs a new Paddle with a given location. */
-   constructor Paddle new(int Ax, int Ay) {
-      let x = Ax;
-      let y = Ay;
+   constructor Paddle new() {
+      let x = 231;
+      let y = 230;
       do draw();
       return this;
+   }
+
+   method int getX() {
+    return x;
+   }
+
+   method int getY() {
+    return y;
    }
 
    /** Disposes this Paddle. */
@@ -20,13 +28,15 @@ class Paddle {
 
    /** Draws the Paddle on the screen. */
    method void draw() {
-      do Graphics.drawPaddle(x,y);
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
       return;
    }
 
    /** Erases the Paddle from the screen. */
    method void erase() {
-      do Graphics.erasePaddle(x,y);
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
       return;
    }
 
@@ -35,7 +45,7 @@ class Paddle {
         if (x > 1) {
             do erase();
             let x = x - 2;
-            do Graphics.drawPaddle(x,y);
+            do draw();
         }
         return;
    }
@@ -46,7 +56,7 @@ class Paddle {
          if (x < 460) {
             do erase();
             let x = x + 2;
-            do Graphics.drawPaddle(x,y);
+            do draw();
         }
         return;
     }

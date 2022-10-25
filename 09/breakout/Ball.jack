@@ -5,14 +5,22 @@ class Ball {
    field int x, y, r, x_move_dist, y_move_dist; // screen location of the center of the ball
 
    /** Constructs a new player with a given location. */
-   constructor Ball new(int Ax, int Ay, int Ar, int move_dist) {
-      let x = Ax;
-      let y = Ay;
-      let r = Ar;
-      let x_move_dist = move_dist;
-      let y_move_dist = move_dist;
+   constructor Ball new() {
+      let x = 256;
+      let y = 219;
+      let r = 10;
+      let x_move_dist = -1;
+      let y_move_dist = -1;
       do draw();
       return this;
+   }
+
+   method int getX() {
+    return x;
+   }
+
+   method int getY() {
+    return y;
    }
 
    /** Disposes this ball. */
@@ -23,14 +31,16 @@ class Ball {
 
    /** Draws the ball on the screen. */
    method void draw() {
-      do Graphics.drawBall(x,y,r);
-      return;
+    do Screen.setColor(true);
+    do Screen.drawCircle(x,y,r);
+    return;
    }
 
    /** Erases the player from the screen. */
    method void erase() {
-      do Graphics.eraseBall(x,y,r);
-      return;
+    do Screen.setColor(false);
+    do Screen.drawCircle(x,y,r);
+    return;
    }
 
    /** Moves the player left by 2 pixels. */
@@ -40,22 +50,6 @@ class Ball {
     let y = y + y_move_dist;
     do draw();
     return;
-   }
-
-
-   method bool check_collision_with_walls() {
-    var bool fail;
-    let fail = false;
-    if ((x = 10) | (x = 501)) {
-        do bounce(true, false);
-    }
-    if (y = 10) {
-        do bounce(false, true);
-    }
-    if (y < 240) {
-        let fail = true;
-    }
-    return fail;
    }
 
     

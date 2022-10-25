@@ -8,7 +8,6 @@ class Game {
    field int direction; // the player's current direction: 
                         // 1=left, 2=right
    field Ball ball; // ball
-   field bool fail; // failing condition
 
    /** Constructs a new breakout Game. */
    constructor Game new() {
@@ -16,9 +15,8 @@ class Game {
 		do Screen.clearScreen();
       do Screen.setColor(true);
       do Screen.drawLine(0, 248, 511, 248);
-      let paddle = Paddle.new(231, 230);
-      let ball = Ball.new(256, 219, 10, -1);
-      let fail = false;
+      let paddle = Paddle.new();
+      let ball = Ball.new();
       let direction = 0;  // initial state is no movement
       return this;
    }
@@ -37,14 +35,52 @@ class Game {
       do Sys.wait(5);  // delays the next movement
       return;
    }
-   
 
+   method bool check_collision_with_walls(Ball ball) {
+      var int ball_x;
+      var int ball_y;
+      let ball_x = ball.getX();
+      let ball_y = ball.getY();
+
+      if ((ball_x = 10) | (ball_y = 501)) {
+         do ball.bounce(true, false);
+      }
+      if (ball_y = 10) {
+         do ball.bounce(false, true);
+      }
+      if (ball_y < 240) {
+         return false;
+      }
+      return true;
+   }
+
+   method void check_collision_with_paddle(Ball ball, Paddle paddle) {
+      // current coordinates of our ball
+      var int ball_x;
+      var int ball_y;
+
+      // current coordinates of our paddle
+      var int paddle_x;
+      var int paddle_y;
+
+      let ball_x = ball.getX();
+      let ball_y = ball.getY();
+      
+      let paddle_x = paddle.getX();
+      let paddle_y = paddle.getY();
+      
+      // check if ball's distance(from its middle)
+      // from paddle(from its middle) is less than
+      // width of paddle and ball is below a certain
+      // coordinate to detect their collision
+      return;
+   }
+   
    /** Runs the game: handles the user's inputs and moves the paddle accordingly */
    method void run() {
       var char key;  // the key currently pressed by the user
       var boolean exit;
       let exit = false;
-
       // wait for space to start
       while (~(key = 32)) {
          let key = Keyboard.keyPressed();
@@ -63,8 +99,7 @@ class Game {
          if (key = 81) { let exit = true; }   // q == exit
          
          do movePaddle();
-
-         let exit = ~ball.check_collision_with_walls();
+         let exit = check_collision_with_walls(ball);
      } // while
      return;
    }

@@ -2,14 +2,24 @@ function Paddle.new 0
 push constant 2
 call Memory.alloc 1
 pop pointer 0
-push argument 0
+push constant 231
 pop this 0
-push argument 1
+push constant 230
 pop this 1
 push pointer 0
 call Paddle.draw 1
 pop temp 0
 push pointer 0
+return
+function Paddle.getX 0
+push argument 0
+pop pointer 0
+push this 0
+return
+function Paddle.getY 0
+push argument 0
+pop pointer 0
+push this 1
 return
 function Paddle.dispose 0
 push argument 0
@@ -22,18 +32,37 @@ return
 function Paddle.draw 0
 push argument 0
 pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
 push this 0
 push this 1
-call Graphics.drawPaddle 2
+push this 0
+push constant 50
+add
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
 pop temp 0
 push constant 0
 return
 function Paddle.erase 0
 push argument 0
 pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
 push this 0
 push this 1
-call Graphics.erasePaddle 2
+push this 0
+push constant 50
+add
+push this 1
+push constant 10
+add
+call Screen.drawRectangle 4
 pop temp 0
 push constant 0
 return
@@ -53,9 +82,8 @@ push this 0
 push constant 2
 sub
 pop this 0
-push this 0
-push this 1
-call Graphics.drawPaddle 2
+push pointer 0
+call Paddle.draw 1
 pop temp 0
 label IF_FALSE0
 push constant 0
@@ -76,9 +104,8 @@ push this 0
 push constant 2
 add
 pop this 0
-push this 0
-push this 1
-call Graphics.drawPaddle 2
+push pointer 0
+call Paddle.draw 1
 pop temp 0
 label IF_FALSE0
 push constant 0
