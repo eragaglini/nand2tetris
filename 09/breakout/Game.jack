@@ -42,7 +42,7 @@ class Game {
       let ball_x = ball.getX();
       let ball_y = ball.getY();
 
-      if ((ball_x = 10) | (ball_y = 501)) {
+      if ((ball_x = 10) | (ball_x = 501)) {
          do ball.bounce(true, false);
       }
       if (ball_y = 10) {
@@ -73,6 +73,34 @@ class Game {
       // from paddle(from its middle) is less than
       // width of paddle and ball is below a certain
       // coordinate to detect their collision
+      if (Utils.distance(ball_x,ball_y, paddle_x + 25, paddle_y + 5) < 50 & (ball_y > 220 | ball_y = 220)) {
+         // If Paddle is on Right of Screen
+         if (paddle_x > 206) {
+            if (ball_x > paddle_x) {
+                // If ball hits paddles left side it
+                // should go back to left
+                do ball.bounce(true, true);
+                return;
+            }
+            else {
+                do ball.bounce(false, true);
+                return;
+            }
+         }
+         if (paddle_x < 206) {
+            if (ball_x < paddle_x) {
+                // If ball hits paddles left side it
+                // should go back to left
+                do ball.bounce(true, true);
+                return;
+            }
+            else {
+                do ball.bounce(false, true);
+                return;
+            }
+         }
+         return;
+      }
       return;
    }
    
@@ -99,6 +127,7 @@ class Game {
          if (key = 81) { let exit = true; }   // q == exit
          
          do movePaddle();
+         do check_collision_with_paddle(ball, paddle);
          let exit = check_collision_with_walls(ball);
      } // while
      return;

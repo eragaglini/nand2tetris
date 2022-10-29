@@ -73,7 +73,7 @@ pop local 1
 push local 0
 push constant 10
 eq
-push local 1
+push local 0
 push constant 501
 eq
 or
@@ -127,6 +127,97 @@ pop local 2
 push argument 2
 call Paddle.getY 1
 pop local 3
+push local 0
+push local 1
+push local 2
+push constant 25
+add
+push local 3
+push constant 5
+add
+call Utils.distance 4
+push constant 50
+lt
+push local 1
+push constant 220
+gt
+push local 1
+or
+push constant 220
+eq
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 2
+push constant 206
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+push local 2
+gt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 1
+push constant 0
+not
+push constant 0
+not
+call Ball.bounce 3
+pop temp 0
+push constant 0
+return
+goto IF_END2
+label IF_FALSE2
+push argument 1
+push constant 0
+push constant 0
+not
+call Ball.bounce 3
+pop temp 0
+push constant 0
+return
+label IF_END2
+label IF_FALSE1
+push local 2
+push constant 206
+lt
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 0
+push local 2
+lt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push argument 1
+push constant 0
+not
+push constant 0
+not
+call Ball.bounce 3
+pop temp 0
+push constant 0
+return
+goto IF_END4
+label IF_FALSE4
+push argument 1
+push constant 0
+push constant 0
+not
+call Ball.bounce 3
+pop temp 0
+push constant 0
+return
+label IF_END4
+label IF_FALSE3
+push constant 0
+return
+label IF_FALSE0
 push constant 0
 return
 function Game.run 2
@@ -204,6 +295,11 @@ pop local 1
 label IF_FALSE4
 push pointer 0
 call Game.movePaddle 1
+pop temp 0
+push pointer 0
+push this 2
+push this 0
+call Game.check_collision_with_paddle 3
 pop temp 0
 push pointer 0
 push this 2
