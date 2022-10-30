@@ -6,7 +6,6 @@
 class SnakeGame {
    
    field Snake snake;
-   field int direction; // the player's current direction
 
    /** Constructs a new snake Game. */
    constructor SnakeGame new() {
@@ -17,7 +16,6 @@ class SnakeGame {
    do Screen.drawLine(0, 239, 511, 239);
    // snake
    let snake = Snake.new(206, 128);
-   let direction = 3;
    return this;
    }
 
@@ -42,9 +40,9 @@ class SnakeGame {
          // waits for a key to be pressed
          while (key = 0) {
             let key = Keyboard.keyPressed();
-            let direction = snake.getDirection();
-            do snake.move(direction);
          }
+         let direction = snake.getDirection();
+         do snake.move(direction);
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();
          if (key = 81) { let exit = true; }   // q == exit

@@ -1,5 +1,5 @@
 function SnakeGame.new 0
-push constant 2
+push constant 1
 call Memory.alloc 1
 pop pointer 0
 push constant 0
@@ -16,8 +16,6 @@ push constant 206
 push constant 128
 call Snake.new 2
 pop this 0
-push constant 3
-pop this 1
 push pointer 0
 return
 function SnakeGame.dispose 0
@@ -57,6 +55,8 @@ not
 if-goto WHILE_END2
 call Keyboard.keyPressed 0
 pop local 0
+goto WHILE_EXP2
+label WHILE_END2
 push this 0
 call Snake.getDirection 1
 pop local 2
@@ -64,8 +64,6 @@ push this 0
 push local 2
 call Snake.move 2
 pop temp 0
-goto WHILE_EXP2
-label WHILE_END2
 call Keyboard.keyPressed 0
 pop local 0
 push local 0

@@ -79,25 +79,25 @@ class Snake {
    }
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
-   method void move(int newDir) {
+   method void move(int new_direction) {
 
     // going up is allowed only if we are currently moving left or right
-    if (newDir = 1) {
+    if (new_direction = 1) {
         do moveUp();
         return;
     }
     // going down is allowed only if we are currently moving left or right
-    if (newDir = 2) {
+    if (new_direction = 2) {
         do moveDown();
         return;
     }
     // going left is allowed only if we are currently moving up or down
-    if (newDir = 3) {
+    if (new_direction = 3) {
         do moveLeft();
         return;
     }
     // going left is allowed only if we are currently moving up or down
-    if (newDir = 4) {
+    if (new_direction = 4) {
         do moveRight();
         return;
     }
