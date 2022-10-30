@@ -1,0 +1,42 @@
+
+/** Implements a graphical brick. */
+class Brick {
+   
+   field int x, y; // screen location of the Paddle's top-left corner
+
+   /** Constructs a new Brick with a given location. */
+   constructor Brick new(int Ax, int Ay) {
+      let x = Ax;
+      let y = Ay;
+      do draw();
+      return this;
+   }
+
+   method int getX() {
+    return x;
+   }
+
+   method int getY() {
+    return y;
+   }
+
+   /** Disposes this brick. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the brick on the screen. */
+   method void draw() {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
+      return;
+   }
+
+   /** Erases the Paddle from the screen. */
+   method void erase() {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + 50, y + 10);
+      return;
+   }
+}

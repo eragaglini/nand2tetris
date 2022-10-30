@@ -8,13 +8,17 @@ class Game {
    field int direction; // the player's current direction: 
                         // 1=left, 2=right
    field Ball ball; // ball
+   field int score; // keep track of user's score, if score == 30, user wins
+   field Array bricks; // bricks
 
    /** Constructs a new breakout Game. */
    constructor Game new() {
       // setup screen
 		do Screen.clearScreen();
-      do Screen.setColor(true);
+      do Screen.setColor(false);
       do Screen.drawLine(0, 248, 511, 248);
+      do Screen.setColor(true);
+      do Screen.drawRectangle(0, 0, 511, 255);
       let paddle = Paddle.new();
       let ball = Ball.new();
       let direction = 0;  // initial state is no movement
@@ -58,6 +62,7 @@ class Game {
       // current coordinates of our ball
       var int ball_x;
       var int ball_y;
+      var int distance;
 
       // current coordinates of our paddle
       var int paddle_x;
@@ -68,12 +73,14 @@ class Game {
       
       let paddle_x = paddle.getX();
       let paddle_y = paddle.getY();
+
+      let distance = Utils.distance(ball_x,ball_y, paddle_x + 25, paddle_y + 5) ;
       
       // check if ball's distance(from its middle)
       // from paddle(from its middle) is less than
       // width of paddle and ball is below a certain
       // coordinate to detect their collision
-      if (Utils.distance(ball_x,ball_y, paddle_x + 25, paddle_y + 5) < 50 & (ball_y > 220 | ball_y = 220)) {
+      if (distance < 50 & (ball_y = 220)) {
          do ball.bounce(false, true);
          return;
       }
@@ -84,6 +91,7 @@ class Game {
    method void run() {
       var char key;  // the key currently pressed by the user
       var boolean exit;
+
       let exit = false;
       // wait for space to start
       while (~(key = 32)) {
@@ -93,6 +101,7 @@ class Game {
       while (~exit) {
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();
+
          // move ball
          do ball.move();
 
@@ -103,6 +112,8 @@ class Game {
          if (key = 81) { let exit = true; }   // q == exit
          
          do movePaddle();
+
+
          do check_collision_with_paddle(ball, paddle);
          let exit = check_collision_with_walls(ball);
      } // while

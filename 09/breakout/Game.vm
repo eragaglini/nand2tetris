@@ -1,11 +1,10 @@
 function Game.new 0
-push constant 3
+push constant 5
 call Memory.alloc 1
 pop pointer 0
 call Screen.clearScreen 0
 pop temp 0
 push constant 0
-not
 call Screen.setColor 1
 pop temp 0
 push constant 0
@@ -13,6 +12,16 @@ push constant 248
 push constant 511
 push constant 248
 call Screen.drawLine 4
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push constant 0
+push constant 0
+push constant 511
+push constant 255
+call Screen.drawRectangle 4
 pop temp 0
 call Paddle.new 0
 pop this 0
@@ -112,7 +121,7 @@ label IF_FALSE2
 push constant 0
 not
 return
-function Game.check_collision_with_paddle 4
+function Game.check_collision_with_paddle 5
 push argument 0
 pop pointer 0
 push argument 1
@@ -123,26 +132,24 @@ call Ball.getY 1
 pop local 1
 push argument 2
 call Paddle.getX 1
-pop local 2
+pop local 3
 push argument 2
 call Paddle.getY 1
-pop local 3
+pop local 4
 push local 0
 push local 1
-push local 2
+push local 3
 push constant 25
 add
-push local 3
+push local 4
 push constant 5
 add
 call Utils.distance 4
+pop local 2
+push local 2
 push constant 50
 lt
 push local 1
-push constant 220
-gt
-push local 1
-or
 push constant 220
 eq
 and
@@ -158,27 +165,6 @@ pop temp 0
 push constant 0
 return
 label IF_FALSE0
-push local 0
-push constant 10
-add
-push local 2
-eq
-push local 1
-push local 3
-push constant 5
-add
-eq
-and
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
-push argument 1
-push constant 0
-not
-push constant 0
-call Ball.bounce 3
-pop temp 0
-label IF_FALSE1
 push constant 0
 return
 function Game.run 2
