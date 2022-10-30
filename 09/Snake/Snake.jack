@@ -83,22 +83,46 @@ class Snake {
 
     // going up is allowed only if we are currently moving left or right
     if (new_direction = 1) {
-        do moveUp();
+        if (~(direction = 2)){
+            do moveUp();
+            do setDirection(new_direction);
+        }
+        else {
+            do moveDown();
+        }
         return;
     }
     // going down is allowed only if we are currently moving left or right
     if (new_direction = 2) {
-        do moveDown();
+        if (~(direction = 1)){
+            do moveDown();
+            do setDirection(new_direction);
+        }
+        else {
+            do moveUp();
+        }
         return;
     }
     // going left is allowed only if we are currently moving up or down
     if (new_direction = 3) {
-        do moveLeft();
+        if (~(direction = 4)){
+            do moveLeft();
+            do setDirection(new_direction);
+        }
+        else {
+            do moveRight();
+        }
         return;
     }
-    // going left is allowed only if we are currently moving up or down
+    // going right is allowed only if we are currently moving up or down
     if (new_direction = 4) {
-        do moveRight();
+        if (~(direction = 3)){
+            do moveRight();
+            do setDirection(new_direction);
+        }
+        else {
+            do moveLeft();
+        }
         return;
     }
 

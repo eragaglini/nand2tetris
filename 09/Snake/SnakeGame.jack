@@ -6,6 +6,7 @@
 class SnakeGame {
    
    field Snake snake;
+   field int delay;
 
    /** Constructs a new snake Game. */
    constructor SnakeGame new() {
@@ -16,6 +17,7 @@ class SnakeGame {
    do Screen.drawLine(0, 239, 511, 239);
    // snake
    let snake = Snake.new(206, 128);
+   let delay = 100;
    return this;
    }
 
@@ -30,6 +32,7 @@ class SnakeGame {
       var char key;  // the key currently pressed by the user
       var boolean exit;
       var int direction;
+      let direction = snake.getDirection();
       let exit = false;
       // wait for space to start
       while (~(key = 32)) {
@@ -38,10 +41,6 @@ class SnakeGame {
 
       while (~exit) {
          // waits for a key to be pressed
-         while (key = 0) {
-            let key = Keyboard.keyPressed();
-         }
-         let direction = snake.getDirection();
          do snake.move(direction);
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();
@@ -51,7 +50,7 @@ class SnakeGame {
          if (key = 130) { let direction = 3; }   // left arrow
          if (key = 132) { let direction = 4; }   // right arrow
 
-         do snake.setDirection(direction);
+         do Sys.wait(delay);
      } // while
      return;
    }
