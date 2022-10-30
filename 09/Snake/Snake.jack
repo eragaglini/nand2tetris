@@ -1,0 +1,122 @@
+
+/**
+ * Implements a snake
+ */
+
+class Snake {
+
+    field int x, y, size, direction;
+
+   /** Constructs a new snake Game. */
+   constructor Snake new(int Ax, int Ay) {
+    let x = Ax;
+    let y = Ay;
+    let size = 4;
+    let direction = 3;
+    do draw();
+    return this;
+   }
+
+   /** Disposes this game. */
+   method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+   }
+
+   /** Draws the snake on the screen. */
+   method void draw() {
+	do Screen.setColor(true);
+	do Screen.drawRectangle(x, y, x + size, y + size);
+    return;
+   }
+
+   /** Erases the snake from the screen. */
+   method void erase() {
+	do Screen.setColor(false);
+	do Screen.drawRectangle(x, y, x + size, y + size);
+    return;
+   }
+
+
+   /** Moves the square up by 2 pixels. */
+   method void moveUp() {
+    if (y > 1) {
+        do erase();
+        let y = y - 2;
+        do draw();
+    }
+    return;
+   }
+
+   /** Moves the square down by 2 pixels. */
+   method void moveDown() {
+      if ((y + size) < 254) {
+        do erase();
+        let y = y + 2;
+        do draw();
+      }
+      return;
+   }
+
+   /** Moves the square left by 2 pixels. */
+   method void moveLeft() {
+      if (x > 1) {
+        do erase();
+        let x = x - 2;
+        do draw();
+      }
+      return;
+   }
+
+   /** Moves the square right by 2 pixels. */
+   method void moveRight() {
+      if ((x + size) < 510) {
+        do erase();
+        let x = x + 2;
+        do draw();
+      }
+      return;
+   }
+   
+   /** Runs the game: handles the user's inputs and moves the snake accordingly */
+   method void move(int newDir) {
+
+    // going up is allowed only if we are currently moving left or right
+    if (newDir = 1) {
+        do moveUp();
+        return;
+    }
+    // going down is allowed only if we are currently moving left or right
+    if (newDir = 2) {
+        do moveDown();
+        return;
+    }
+    // going left is allowed only if we are currently moving up or down
+    if (newDir = 3) {
+        do moveLeft();
+        return;
+    }
+    // going left is allowed only if we are currently moving up or down
+    if (newDir = 4) {
+        do moveRight();
+        return;
+    }
+
+    do Sys.wait(5);
+    return;
+   }
+
+   method int getDirection() {
+    return direction;
+   }
+   method void setDirection(int new_direction) {
+    let direction = new_direction;
+    return;
+   }
+   method int getX() {
+    return x;
+   }
+   method int getY() {
+    return y;
+   }
+}
