@@ -20,7 +20,7 @@ class Game {
       do Screen.drawLine(0, 248, 511, 248);
       let paddle = Paddle.new();
       let ball = Ball.new();
-
+      let bricks = Array.new(30);
       let direction = 0;  // initial state is no movement
       return this;
    }
@@ -56,6 +56,33 @@ class Game {
          return false;
       }
       return true;
+   }
+
+   method int check_collision_with_bricks(Ball ball, int brick_num) {
+      var int i;
+      var Brick brick;
+      var int ball_x;
+      var int ball_y;
+      var int distance;
+      let ball_x = ball.getX();
+      let ball_y = ball.getY();
+      let i = 0;
+      while (i < brick_num) {
+         let brick = bricks[i];
+         if (
+            (brick.getX() < ball_x) & 
+            ((brick.getX() + 50) > ball_x) &
+            (ball_y = brick.getY())
+         ) {
+            do brick.erase();
+            do brick.dispose();
+            let brick_num = brick_num - 1;
+            do ball.bounce(true,true);
+         }
+         
+         let i = i + 1;
+      }
+      return brick_num;
    }
 
    method void check_collision_with_paddle(Ball ball, Paddle paddle) {
@@ -122,6 +149,7 @@ class Game {
       }
 
 
+
       let exit = false;
       // wait for space to start
       while (~(key = 32)) {
@@ -146,6 +174,7 @@ class Game {
 
          do check_collision_with_paddle(ball, paddle);
          let exit = check_collision_with_walls(ball);
+         let brick_num = check_collision_with_bricks(ball, brick_num);
      } // while
      return;
    }
