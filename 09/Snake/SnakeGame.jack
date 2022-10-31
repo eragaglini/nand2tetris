@@ -16,15 +16,16 @@ class SnakeGame {
    constructor SnakeGame new() {
 
       // setup screen
-      //do Screen.clearScreen();
-      //do Screen.setColor(true);
-      //do Screen.drawLine(0, 239, 511, 239);
+      do Screen.clearScreen();
+      do Screen.setColor(true);
+      do Screen.drawLine(0, 240, 511, 240);
       // size = 64 is for testing
-      let size = 64;
-      //let size = 8;
+      //let size = 64;
+      let size = 8;
       // snake
       let snake = Snake.new(2, 2, size);
-      let delay = 100;
+      //let delay = 100;
+      let delay = 150;
       return this;
    }
 
@@ -52,17 +53,31 @@ class SnakeGame {
    }
 
    method boolean checkFood() {
-   var int snakeX, snakeY;
-   let snakeX = snake.getX();
-   let snakeY = snake.getY();
+      var int snakeX, snakeY;
+      let snakeX = snake.getX();
+      let snakeY = snake.getY();
 
-   if( snakeX = foodX ) {
-      if( snakeY = foodY ) {
-         do Output.printString("checkFood funge");
-         return true;
+      if( snakeX = foodX ) {
+         if( snakeY = foodY ) {
+            return true;
+         }
       }
+      return false;
    }
-   return false;
+
+   method void placeFood() {
+      // get food coordinates
+      let foodX = Utils.random((512/size) - 1);
+      //let foodY = Utils.random((256/size) - 1);
+      // last 2 rows are used for printing score
+      let foodY = Utils.random((256/size) - 3);
+      while  (checkFood()) {
+         // get food coordinates
+         let foodX = Utils.random((512/size) - 1);
+         let foodY = Utils.random((256/size) - 3);
+      }
+      do drawFood();
+      return;
    }
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
@@ -72,9 +87,11 @@ class SnakeGame {
       var char key;  // the key currently pressed by the user
       var boolean exit;
       var int direction;
+
       let direction = snake.getDirection();
       let exit = false;
       let seed = 0;
+
       // wait for space to start
       while (~(key = 32)) {
          let key = Keyboard.keyPressed();
@@ -82,20 +99,12 @@ class SnakeGame {
       }
 
       do Utils.initRandomSeed(seed);
-      // get food coordinates
-      let foodX = Utils.random((512/size) - 1);
-      let foodY = Utils.random((256/size) - 1);
-      while  (checkFood()) {
-      // get food coordinates
-      let foodX = Utils.random((512/size) - 1);
-      let foodY = Utils.random((256/size) - 1);
-
-      }
-      do drawFood();
+      do placeFood();
 
       while (~exit) {
          // waits for a key to be pressed
-         do snake.move(direction);
+         do snake.move(direction, delay);
+
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();
          if (key = 81) { let exit = true; }   // q == exit
@@ -103,10 +112,13 @@ class SnakeGame {
          if (key = 133) { let direction = 2; }   // down arrow
          if (key = 130) { let direction = 3; }   // left arrow
          if (key = 132) { let direction = 4; }   // right arrow
+         
 
-         do checkFood();
+         if (checkFood()) {
+            do placeFood();
+         }
 
-         do Sys.wait(delay);
+         //do Sys.wait(delay);
      } // while
      return;
    }

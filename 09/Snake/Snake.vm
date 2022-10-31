@@ -113,7 +113,7 @@ push this 1
 push constant 256
 push this 2
 call Math.divide 2
-push constant 1
+push constant 3
 sub
 lt
 if-goto IF_TRUE0
@@ -291,6 +291,9 @@ call Snake.moveLeft 1
 pop temp 0
 label IF_END7
 label IF_FALSE6
+push argument 2
+call Sys.wait 1
+pop temp 0
 push constant 0
 return
 function Snake.getDirection 0

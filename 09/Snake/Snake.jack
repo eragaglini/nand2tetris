@@ -53,7 +53,9 @@ class Snake {
 
    /** Moves the snake down by 2 pixels. */
    method void moveDown() {
-    if (y < ((256 / size) - 1)){
+    //if (y < ((256 / size) - 1)){
+    // last two rows are used for printing score
+    if (y < ((256 / size) - 3)){
         do erase();
         let y = y + 1;
         do draw();
@@ -82,7 +84,7 @@ class Snake {
    }
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
-   method void move(int new_direction) {
+   method void move(int new_direction, int delay) {
 
     // going up is allowed only if we are currently moving left or right
     if (new_direction = 1) {
@@ -124,7 +126,7 @@ class Snake {
             do moveLeft();
         }
     }
-    
+    do Sys.wait(delay);
     return;
    }
 
