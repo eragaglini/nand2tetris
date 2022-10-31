@@ -29,7 +29,7 @@ class SnakeGame {
 
       do Screen.setColor(true);
       //do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
-      do Screen.drawCircle(foodX*4+2, foodY*4+2, 2);
+      do Screen.drawCircle(foodX*4, foodY*4, 2);
       return;
    }
 
@@ -37,8 +37,8 @@ class SnakeGame {
    method void eraseFood() {
 
       do Screen.setColor(false);
-      //do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
-      do Screen.drawCircle(foodX*4, foodY*4, 2);
+      do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
+      //do Screen.drawCircle(foodX*4, foodY*4, 2);
       return;
    }
 
@@ -50,16 +50,15 @@ class SnakeGame {
    }
 
    method bool check_collision_with_snake() {
-      var int snakeLeft, snakeRight, snakeTop, snakeBottom;
-      let snakeLeft = snake.getX();
-      let snakeRight = snake.getX() + 4;
-      let snakeTop = snake.getY();
-      let snakeBottom = snake.getY() + 4;
+      var int snakeX, snakeY;
+      let snakeX = snake.getX();
+      let snakeY = snake.getY();
       //if ((foodX = snakeX) & (foodY = snakeY)) {
-      if ((foodX+2 = snakeRight) & (foodX-2 = snakeLeft) & (foodY+2 = snakeBottom) & (foodY-2 = snakeTop)){
-            do eraseFood();
-            do snake.draw();
-            return true;
+      if ((foodX+2 = snakeX) & (foodY-2 = snakeY)){
+         do Output.printString("burgodden");
+         do eraseFood();
+         do snake.draw();
+         return true;
       }
       else {
          return false;
@@ -85,11 +84,11 @@ class SnakeGame {
       do Utils.initRandomSeed(seed);
       // get food coordinates
       let foodX = Utils.random(128);
-      let foodY = Utils.random(59);
+      let foodY = Utils.random(60);
       while  (check_collision_with_snake()) {
       // get food coordinates
       let foodX = Utils.random(128);
-      let foodY = Utils.random(59);
+      let foodY = Utils.random(60);
 
       }
       do drawFood();

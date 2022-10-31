@@ -13,18 +13,6 @@ class Game {
 
    /** Constructs a new breakout Game. */
    constructor Game new() {
-      var int i;
-      var int j;
-      var int brick_num;
-      var int next_brick_x;
-      var int next_brick_y;
-      var Brick next_brick;
-      let brick_num = 0;
-      let i = 0;
-      let j = 0;
-
-      let next_brick_x = 93;
-      let next_brick_y = 20;
 
       // setup screen
 		do Screen.clearScreen();
@@ -32,22 +20,6 @@ class Game {
       do Screen.drawLine(0, 248, 511, 248);
       let paddle = Paddle.new();
       let ball = Ball.new();
-
-      while (i < 5) {
-         while(j < 6) {
-            let next_brick = Brick.new(next_brick_x, next_brick_y);
-            let bricks[brick_num] = next_brick;
-            let brick_num = brick_num + 1;
-            do Output.printInt(brick_num);
-            let next_brick_x = next_brick_x + 55;
-            let j = j +1;
-         }
-         let next_brick_y = next_brick_y + 15;
-         let next_brick_x = 93;
-
-         let j = 0;
-         let i = i + 1;
-      }
 
       let direction = 0;  // initial state is no movement
       return this;
@@ -119,6 +91,36 @@ class Game {
    method void run() {
       var char key;  // the key currently pressed by the user
       var boolean exit;
+
+      // bricks
+      var int i;
+      var int j;
+      var int next_brick_x;
+      var int next_brick_y;
+      var Brick next_brick;
+      var int brick_num;
+      let i = 0;
+      let j = 0;
+      let brick_num = 0;
+
+      let next_brick_x = 93;
+      let next_brick_y = 20;
+
+      while (i < 5) {
+         while(j < 6) {
+            let next_brick = Brick.new(next_brick_x, next_brick_y);
+            let bricks[brick_num] = next_brick;
+            let next_brick_x = next_brick_x + 55;
+            let j = j +1;
+            let brick_num = brick_num + 1;
+         }
+         let next_brick_y = next_brick_y + 15;
+         let next_brick_x = 93;
+
+         let j = 0;
+         let i = i + 1;
+      }
+
 
       let exit = false;
       // wait for space to start

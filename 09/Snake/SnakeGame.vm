@@ -30,13 +30,9 @@ pop temp 0
 push this 2
 push constant 4
 call Math.multiply 2
-push constant 2
-add
 push this 3
 push constant 4
 call Math.multiply 2
-push constant 2
-add
 push constant 2
 call Screen.drawCircle 3
 pop temp 0
@@ -51,9 +47,13 @@ pop temp 0
 push this 2
 push constant 4
 call Math.multiply 2
+push constant 2
+add
 push this 3
 push constant 4
 call Math.multiply 2
+push constant 2
+add
 push constant 2
 call Screen.drawCircle 3
 pop temp 0
@@ -70,102 +70,48 @@ call Memory.deAlloc 1
 pop temp 0
 push constant 0
 return
-function SnakeGame.check_collision_with_snake 4
+function SnakeGame.check_collision_with_snake 2
 push argument 0
 pop pointer 0
 push this 0
 call Snake.getX 1
 pop local 0
 push this 0
-call Snake.getX 1
-push constant 4
-add
+call Snake.getY 1
 pop local 1
-push this 0
-call Snake.getY 1
-pop local 2
-push this 0
-call Snake.getY 1
-push constant 4
-add
-pop local 3
 push this 2
 push constant 2
 add
-push local 1
-eq
-push this 2
-push constant 2
-sub
 push local 0
 eq
-and
-push this 3
-push constant 2
-add
-push local 3
-eq
-and
 push this 3
 push constant 2
 sub
-push local 2
+push local 1
 eq
 and
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push constant 25
+push constant 9
 call String.new 1
-push constant 97
-call String.appendChar 2
 push constant 98
-call String.appendChar 2
-push constant 98
-call String.appendChar 2
-push constant 105
-call String.appendChar 2
-push constant 97
-call String.appendChar 2
-push constant 109
-call String.appendChar 2
-push constant 111
-call String.appendChar 2
-push constant 32
-call String.appendChar 2
-push constant 98
-call String.appendChar 2
-push constant 101
-call String.appendChar 2
-push constant 99
-call String.appendChar 2
-push constant 99
-call String.appendChar 2
-push constant 97
-call String.appendChar 2
-push constant 116
-call String.appendChar 2
-push constant 111
-call String.appendChar 2
-push constant 32
-call String.appendChar 2
-push constant 105
-call String.appendChar 2
-push constant 108
-call String.appendChar 2
-push constant 32
-call String.appendChar 2
-push constant 115
-call String.appendChar 2
-push constant 121
-call String.appendChar 2
-push constant 98
-call String.appendChar 2
-push constant 111
 call String.appendChar 2
 push constant 117
 call String.appendChar 2
-push constant 122
+push constant 114
+call String.appendChar 2
+push constant 103
+call String.appendChar 2
+push constant 111
+call String.appendChar 2
+push constant 100
+call String.appendChar 2
+push constant 100
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 110
 call String.appendChar 2
 call Output.printString 1
 pop temp 0
@@ -214,7 +160,7 @@ pop temp 0
 push constant 128
 call Utils.random 1
 pop this 2
-push constant 59
+push constant 60
 call Utils.random 1
 pop this 3
 label WHILE_EXP1
@@ -225,7 +171,7 @@ if-goto WHILE_END1
 push constant 128
 call Utils.random 1
 pop this 2
-push constant 59
+push constant 60
 call Utils.random 1
 pop this 3
 goto WHILE_EXP1
