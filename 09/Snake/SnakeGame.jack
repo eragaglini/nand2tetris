@@ -10,7 +10,8 @@ class SnakeGame {
    field int delay;    
    // the XY position of the food pellet
    field int foodX, foodY;
-
+   // score of the game
+   field int score;
 
    /** Constructs a new snake Game. */
    constructor SnakeGame new() {
@@ -23,9 +24,11 @@ class SnakeGame {
       //let size = 64;
       let size = 8;
       // snake
-      let snake = Snake.new(2, 2, size);
+      let snake = Snake.new(20, 8, size);
       //let delay = 100;
       let delay = 150;
+      // score
+      let score = 0;
       return this;
    }
 
@@ -102,6 +105,12 @@ class SnakeGame {
       do placeFood();
 
       while (~exit) {
+
+         // display score
+         do Output.moveCursor(22, 5);
+         do Output.printString("Score: ");
+         do Output.printInt(score);
+
          // waits for a key to be pressed
          do snake.move(direction, delay);
 
@@ -116,6 +125,7 @@ class SnakeGame {
 
          if (checkFood()) {
             do placeFood();
+            let score = score + 1;
          }
 
          //do Sys.wait(delay);
