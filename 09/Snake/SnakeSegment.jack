@@ -40,7 +40,10 @@ class SnakeSegment {
     return;
    }
    
-   method void move(int Ax, int Ay) {
+   method void move(int Ax, int Ay, bool to_erase) {
+    if (to_erase) {
+        do erase();
+    }
     let x = Ax;
     let y = Ay;
     do draw();

@@ -94,7 +94,7 @@ class SnakeGame {
       let direction = snake.getDirection();
       let exit = false;
       let seed = 0;
-      
+
       // wait for space to start
       while (~(key = 32)) {
          let key = Keyboard.keyPressed();
@@ -110,6 +110,7 @@ class SnakeGame {
          if (checkFood()) {
             do placeFood();
             let score = score + 1;
+            do snake.increment();
          }
 
          // display score

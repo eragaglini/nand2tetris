@@ -5,8 +5,9 @@
 
 class Snake {
 
-    field int x, y, size, direction;
+    field int x, y, size, direction, histX, histY;
     field Array snake_segments;
+    field int length;
 
    /** Constructs a new snake Game. */
    constructor Snake new(int Ax, int Ay, int Asize) {
@@ -14,6 +15,8 @@ class Snake {
     let y = Ay;
     let size = Asize;
     let direction = 3;
+    let length = 0;
+    let snake_segments = Array.new(100);
     do draw();
     return this;
    }
@@ -47,6 +50,14 @@ class Snake {
     // test
 	//do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
+    return;
+   }
+
+   method void increment() {
+    var SnakeSegment newSeg;
+    let newSeg = SnakeSegment.new(histX, histY, size);
+    let snake_segments[length] = newSeg;
+    let length = length + 1;
     return;
    }
 
@@ -95,6 +106,16 @@ class Snake {
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
    method void move(int new_direction, int delay) {
 
+    var int i;
+    var SnakeSegment segment;
+    var SnakeSegment next_segment;
+    var bool to_erase;
+
+    let to_erase = true;
+    let i = length - 1;    
+    let histX = x;
+    let histY = y;
+
     // going up is allowed only if we are currently moving left or right
     if (new_direction = 1) {
         if (~(direction = 2)){
@@ -135,6 +156,28 @@ class Snake {
             do moveLeft();
         }
     }
+
+    // snake movement
+    // starting from last segment we move it forward in place of the 
+    // following
+    
+    while (i > 0) {
+        let segment = snake_segments[i];
+        let next_segment = snake_segments[i - 1];
+        do segment.move(next_segment.getX(), next_segment.getY(), to_erase);
+        let i = i - 1;
+        let to_erase = false;
+    } 
+    
+    // finally we move the first segment to histX and histY
+    if (
+        (length > 1) |
+        (length = 1)
+    ) {
+        let segment = snake_segments[0];
+        do segment.move(histX, histY, to_erase);
+    }
+
     do Sys.wait(delay);
     return;
    }
