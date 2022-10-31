@@ -168,6 +168,53 @@ call SnakeGame.drawFood 1
 pop temp 0
 push constant 0
 return
+function SnakeGame.checkCollisionWithSegments 3
+push argument 0
+pop pointer 0
+push this 1
+call Snake.getSegments 1
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 2
+push this 1
+call Snake.getLength 1
+lt
+not
+if-goto WHILE_END0
+push local 2
+push local 1
+add
+pop pointer 1
+push that 0
+pop local 0
+push local 0
+call SnakeSegment.getX 1
+push this 1
+call Snake.getX 1
+eq
+push local 0
+call SnakeSegment.getY 1
+push this 1
+call Snake.getY 1
+eq
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+return
+label IF_FALSE0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
 function SnakeGame.run 4
 push argument 0
 pop pointer 0
@@ -219,6 +266,10 @@ pop this 5
 push this 1
 call Snake.increment 1
 pop temp 0
+push this 2
+push constant 5
+sub
+pop this 2
 label IF_FALSE0
 push constant 22
 push constant 5
@@ -249,6 +300,9 @@ push this 1
 push local 3
 push this 2
 call Snake.move 3
+push pointer 0
+call SnakeGame.checkCollisionWithSegments 1
+or
 pop local 2
 call Keyboard.keyPressed 0
 pop local 1

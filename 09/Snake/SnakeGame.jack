@@ -1,6 +1,6 @@
 
 /**
- * Implements the breakout game.
+ * Implements the snake game.
  */
 
 class SnakeGame {
@@ -20,8 +20,6 @@ class SnakeGame {
       do Screen.clearScreen();
       do Screen.setColor(true);
       do Screen.drawLine(0, 240, 511, 240);
-      // size = 64 is for testing
-      //let size = 64;
       let size = 8;
       // snake
       let snake = Snake.new(20, 8, size);
@@ -34,15 +32,13 @@ class SnakeGame {
 
    // draws the food pellet
    method void drawFood() {
-      
       do Screen.setColor(true);
       do Screen.drawCircle((foodX * size) + (size/2), (foodY * size) + (size/2), (size/2 - 1));
       return;
    }
 
-   // draws the erase the food pellet from the screen
+   // erase the food pellet from the screen
    method void eraseFood() {
-      
       do Screen.setColor(false);
       do Screen.drawCircle((foodX * size) + (size/2), (foodY * size) + (size/2), (size/2 - 1));
       return;
@@ -54,7 +50,7 @@ class SnakeGame {
       do Memory.deAlloc(this);
       return;
    }
-
+   // check if the snake ate a food pellet
    method boolean checkFood() {
       var int snakeX, snakeY;
       let snakeX = snake.getX();
@@ -71,16 +67,34 @@ class SnakeGame {
    method void placeFood() {
       // get food coordinates
       let foodX = Utils.random((512/size) - 1);
-      //let foodY = Utils.random((256/size) - 1);
       // last 2 rows are used for printing score
       let foodY = Utils.random((256/size) - 3);
       while  (checkFood()) {
-         // get food coordinates
          let foodX = Utils.random((512/size) - 1);
          let foodY = Utils.random((256/size) - 3);
       }
       do drawFood();
       return;
+   }
+
+   // iterate over the snake segments to check if we hit one
+   method boolean checkCollisionWithSegments() {
+      var SnakeSegment segment;
+      var Array snake_segments;
+      var int i;
+      let snake_segments = snake.getSegments();
+      let i = 0;
+      while(i < snake.getLength()) {
+         let segment = snake_segments[i];
+         if (
+            (segment.getX() = snake.getX()) &
+            (segment.getY() = snake.getY())
+         ) {
+            return true;
+         }
+         let i = i + 1;
+      }
+      return false;
    }
 
    
@@ -91,7 +105,7 @@ class SnakeGame {
       var char key;  // the key currently pressed by the user
       var boolean exit;
       var int direction;
-
+      // initial direction of the snake is 3, we are moving left
       let direction = snake.getDirection();
       let exit = false;
       let seed = 0;
@@ -101,7 +115,7 @@ class SnakeGame {
          let key = Keyboard.keyPressed();
          let seed = seed + 1;
       }
-
+      // initialize randomness
       do Utils.initRandomSeed(seed);
       do placeFood();
 
@@ -112,6 +126,7 @@ class SnakeGame {
             do placeFood();
             let score = score + 1;
             do snake.increment();
+            let delay = delay - 5;
          }
 
          // display score
@@ -119,8 +134,10 @@ class SnakeGame {
          do Output.printString("Score: ");
          do Output.printInt(score);
 
-         // waits for a key to be pressed
-         let exit = snake.move(direction, delay);
+         //let exit = snake.move(direction, delay);
+         //let exit = checkCollisionWithSegments();
+         // if one of these two methods return true, it's game over
+         let exit = snake.move(direction, delay) | checkCollisionWithSegments();
 
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();
@@ -129,8 +146,7 @@ class SnakeGame {
          if (key = 133) { let direction = 2; }   // down arrow
          if (key = 130) { let direction = 3; }   // left arrow
          if (key = 132) { let direction = 4; }   // right arrow
-
-         //do Sys.wait(delay);
+         
      } // while
      return;
    }

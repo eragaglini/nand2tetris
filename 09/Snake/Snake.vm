@@ -27,8 +27,7 @@ push constant 0
 pop local 1
 label WHILE_EXP0
 push local 1
-push this 6
-call Array.Length 1
+push this 7
 lt
 not
 if-goto WHILE_END0
@@ -39,7 +38,7 @@ pop pointer 1
 push that 0
 pop local 0
 push local 0
-call snake_segments.dispose 1
+call SnakeSegment.dispose 1
 pop temp 0
 push local 1
 push constant 1
@@ -508,4 +507,14 @@ function Snake.getY 0
 push argument 0
 pop pointer 0
 push this 1
+return
+function Snake.getLength 0
+push argument 0
+pop pointer 0
+push this 7
+return
+function Snake.getSegments 0
+push argument 0
+pop pointer 0
+push this 6
 return

@@ -9,7 +9,7 @@ class Snake {
     field Array snake_segments;
     field int length;
 
-   /** Constructs a new snake Game. */
+   /** Constructs a new snake. */
    constructor Snake new(int Ax, int Ay, int Asize) {
     let x = Ax;
     let y = Ay;
@@ -21,12 +21,12 @@ class Snake {
     return this;
    }
 
-   /** Disposes this game. */
+   /** Disposes this snake. */
    method void dispose() {
-    var snake_segments seg;
+    var SnakeSegment seg;
     var int i;
     let i = 0;
-    while (i < snake_segments.Length()) {
+    while (i < length) {
         let seg = snake_segments[i];
         do seg.dispose();
         let i = i + 1;
@@ -38,8 +38,6 @@ class Snake {
    /** Draws the snake on the screen. */
    method void draw() {
 	do Screen.setColor(true);
-    // test
-	//do Screen.drawRectangle(x * size, y * size, (x*size) + size, (y*size) + size);
     do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
@@ -47,8 +45,6 @@ class Snake {
    /** Erase the snake from the screen. */
    method void erase() {
 	do Screen.setColor(false);
-    // test
-	//do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
@@ -61,7 +57,7 @@ class Snake {
     return;
    }
 
-   /** Moves the snake up by 2 pixels. */
+   /** Moves the snake up by 1 unity of measure (number of pixels depends on the size of the game). */
    method bool moveUp() {
     if (y > 0) {
         do erase();
@@ -72,7 +68,7 @@ class Snake {
     return true;
    }
 
-   /** Moves the snake down by 2 pixels. */
+   /** Moves the snake down by 1 unity of measure (number of pixels depends on the size of the game). */
    method bool moveDown() {
     //if (y < ((256 / size) - 1)){
     // last two rows are used for printing score
@@ -86,7 +82,7 @@ class Snake {
     return true;
    }
 
-   /** Moves the snake left by 2 pixels. */
+   /** Moves the snake left by 1 unity of measure (number of pixels depends on the size of the game). */
    method bool moveLeft() {
       if (x > 0) {
         do erase();
@@ -97,7 +93,7 @@ class Snake {
     return true;
    }
 
-   /** Moves the snake right by size pixels. */
+   /** Moves the snake right by 1 unity of measure (number of pixels depends on the size of the game). */
    method bool moveRight() {
     if (x < ((512 / size) - 1)){
         do erase();
@@ -108,12 +104,16 @@ class Snake {
       return true;
    }
    
-   /** Runs the game: handles the user's inputs and moves the snake accordingly */
+   /** move handles of the logic of the snake movement, including of its segments
+   returns true if the snakes hits a wall */
    method bool move(int new_direction, int delay) {
+    // failing 
     var bool fail;
+    // variables for iterating snake segments
     var int i;
     var SnakeSegment segment;
     var SnakeSegment next_segment;
+    // we only have to erase last segment
     var bool to_erase;
 
     let fail = false;
@@ -223,5 +223,13 @@ class Snake {
    }
    method int getY() {
     return y;
+   }
+
+   method int getLength() {
+    return length;
+   }
+
+   method Array getSegments() {
+    return snake_segments;
    }
 }

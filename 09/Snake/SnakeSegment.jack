@@ -1,6 +1,6 @@
 
 /**
- * Implements a snake
+ * Implements a snake segment
  */
 
 class SnakeSegment {
@@ -25,8 +25,6 @@ class SnakeSegment {
    /** Draws the snake on the screen. */
    method void draw() {
 	do Screen.setColor(true);
-    // test
-	//do Screen.drawRectangle(x * size, y * size, (x*size) + size, (y*size) + size);
     do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
@@ -34,8 +32,6 @@ class SnakeSegment {
    /** Erase the snake from the screen. */
    method void erase() {
 	do Screen.setColor(false);
-    // test
-	//do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
