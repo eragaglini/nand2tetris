@@ -8,10 +8,10 @@ class Snake {
     field int x, y, size, direction;
 
    /** Constructs a new snake Game. */
-   constructor Snake new(int Ax, int Ay) {
+   constructor Snake new(int Ax, int Ay, int Asize) {
     let x = Ax;
     let y = Ay;
-    let size = 4;
+    let size = Asize;
     let direction = 3;
     do draw();
     return this;
@@ -26,53 +26,56 @@ class Snake {
    /** Draws the snake on the screen. */
    method void draw() {
 	do Screen.setColor(true);
-	do Screen.drawRectangle(x, y, x + size, y + size);
+    // test
+	//do Screen.drawRectangle(x * size, y * size, (x*size) + size, (y*size) + size);
+    do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
 
-   /** Erases the snake from the screen. */
+   /** Erase the snake from the screen. */
    method void erase() {
 	do Screen.setColor(false);
-	do Screen.drawRectangle(x, y, x + size, y + size);
+    // test
+	//do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
+    do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
     return;
    }
 
-
-   /** Moves the square up by 2 pixels. */
+   /** Moves the snake up by 2 pixels. */
    method void moveUp() {
-    if (y > 2) {
+    if (y > 0) {
         do erase();
-        let y = y - 4;
+        let y = y - 1;
         do draw();
     }
     return;
    }
 
-   /** Moves the square down by 2 pixels. */
+   /** Moves the snake down by 2 pixels. */
    method void moveDown() {
-      if ((y + size) < 252) {
+    if (y < ((256 / size) - 1)){
         do erase();
-        let y = y + 4;
+        let y = y + 1;
         do draw();
       }
       return;
    }
 
-   /** Moves the square left by 2 pixels. */
+   /** Moves the snake left by 2 pixels. */
    method void moveLeft() {
-      if (x > 2) {
+      if (x > 0) {
         do erase();
-        let x = x - 4;
+        let x = x - 1;
         do draw();
       }
       return;
    }
 
-   /** Moves the square right by 2 pixels. */
+   /** Moves the snake right by size pixels. */
    method void moveRight() {
-      if ((x + size) < 508) {
+    if (x < ((512 / size) - 1)){
         do erase();
-        let x = x + 4;
+        let x = x + 1;
         do draw();
       }
       return;
@@ -90,7 +93,6 @@ class Snake {
         else {
             do moveDown();
         }
-        return;
     }
     // going down is allowed only if we are currently moving left or right
     if (new_direction = 2) {
@@ -101,7 +103,6 @@ class Snake {
         else {
             do moveUp();
         }
-        return;
     }
     // going left is allowed only if we are currently moving up or down
     if (new_direction = 3) {
@@ -112,7 +113,6 @@ class Snake {
         else {
             do moveRight();
         }
-        return;
     }
     // going right is allowed only if we are currently moving up or down
     if (new_direction = 4) {
@@ -123,10 +123,8 @@ class Snake {
         else {
             do moveLeft();
         }
-        return;
     }
-
-    do Sys.wait(5);
+    
     return;
    }
 

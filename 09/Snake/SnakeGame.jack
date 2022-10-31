@@ -5,6 +5,7 @@
 
 class SnakeGame {
    
+   field int size;
    field Snake snake;
    field int delay;    
    // the XY position of the food pellet
@@ -16,29 +17,32 @@ class SnakeGame {
 
       // setup screen
       //do Screen.clearScreen();
-      do Screen.setColor(true);
-      do Screen.drawLine(0, 239, 511, 239);
+      //do Screen.setColor(true);
+      //do Screen.drawLine(0, 239, 511, 239);
+      let size = 64;
       // snake
-      let snake = Snake.new(126, 62);
+      let snake = Snake.new(2, 2, size);
       let delay = 100;
       return this;
    }
 
    // draws the food pellet
+   /*
    method void drawFood() {
 
       do Screen.setColor(true);
-      //do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
-      do Screen.drawCircle(foodX*4, foodY*4, 2);
+      do Screen.drawCircle((foodX*scale)+2, (foodY*scale)+2, 2);
+	   //do Screen.drawRectangle(foodX * 4, foodY * 4, (foodX * 4) + 4, (foodY * 4) + 4);
       return;
    }
+   */
 
    // erase the food pellet from the screen
    method void eraseFood() {
 
       do Screen.setColor(false);
       do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
-      //do Screen.drawCircle(foodX*4, foodY*4, 2);
+	   //do Screen.drawRectangle((foodX * 4) + 2, (foodY * 4) + 2, (foodX*4) + 4, (foodY*4) + 4);   
       return;
    }
 
@@ -54,8 +58,7 @@ class SnakeGame {
       let snakeX = snake.getX();
       let snakeY = snake.getY();
       //if ((foodX = snakeX) & (foodY = snakeY)) {
-      if ((foodX+2 = snakeX) & (foodY-2 = snakeY)){
-         do Output.printString("burgodden");
+      if ((foodX-2 = snakeX) & (foodY-2 = snakeY)){
          do eraseFood();
          do snake.draw();
          return true;
@@ -83,15 +86,15 @@ class SnakeGame {
 
       do Utils.initRandomSeed(seed);
       // get food coordinates
-      let foodX = Utils.random(128);
-      let foodY = Utils.random(60);
+      let foodX = Utils.random((512/size) - 1);
+      let foodY = Utils.random((256/size) - 1);
       while  (check_collision_with_snake()) {
       // get food coordinates
-      let foodX = Utils.random(128);
-      let foodY = Utils.random(60);
+      let foodX = Utils.random((512/size) - 1);
+      let foodY = Utils.random((256/size) - 1);
 
       }
-      do drawFood();
+      //do drawFood();
 
       while (~exit) {
          // waits for a key to be pressed
@@ -103,6 +106,8 @@ class SnakeGame {
          if (key = 133) { let direction = 2; }   // down arrow
          if (key = 130) { let direction = 3; }   // left arrow
          if (key = 132) { let direction = 4; }   // right arrow
+
+         do check_collision_with_snake();
 
          do Sys.wait(delay);
      } // while
