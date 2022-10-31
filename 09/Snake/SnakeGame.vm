@@ -104,13 +104,13 @@ push this 3
 push constant 2
 add
 push local 3
-gt
+eq
 and
 push this 3
 push constant 2
 sub
 push local 2
-lt
+eq
 and
 if-goto IF_TRUE0
 goto IF_FALSE0

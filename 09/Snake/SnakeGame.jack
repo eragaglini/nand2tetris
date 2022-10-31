@@ -56,8 +56,7 @@ class SnakeGame {
       let snakeTop = snake.getY();
       let snakeBottom = snake.getY() + 4;
       //if ((foodX = snakeX) & (foodY = snakeY)) {
-      if ((foodX+2 = snakeRight) & (foodX-2 = snakeLeft) & (foodY+2 > snakeBottom) & (foodY-2 < snakeTop)){
-            do Output.printString("abbiamo beccato il sybouz");
+      if ((foodX+2 = snakeRight) & (foodX-2 = snakeLeft) & (foodY+2 = snakeBottom) & (foodY-2 = snakeTop)){
             do eraseFood();
             do snake.draw();
             return true;
