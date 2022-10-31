@@ -62,55 +62,61 @@ class Snake {
    }
 
    /** Moves the snake up by 2 pixels. */
-   method void moveUp() {
+   method bool moveUp() {
     if (y > 0) {
         do erase();
         let y = y - 1;
         do draw();
+        return false;
     }
-    return;
+    return true;
    }
 
    /** Moves the snake down by 2 pixels. */
-   method void moveDown() {
+   method bool moveDown() {
     //if (y < ((256 / size) - 1)){
     // last two rows are used for printing score
     if (y < ((256 / size) - 3)){
         do erase();
         let y = y + 1;
         do draw();
+        return false;
       }
-      return;
+    
+    return true;
    }
 
    /** Moves the snake left by 2 pixels. */
-   method void moveLeft() {
+   method bool moveLeft() {
       if (x > 0) {
         do erase();
         let x = x - 1;
         do draw();
+        return false;
       }
-      return;
+    return true;
    }
 
    /** Moves the snake right by size pixels. */
-   method void moveRight() {
+   method bool moveRight() {
     if (x < ((512 / size) - 1)){
         do erase();
         let x = x + 1;
         do draw();
+        return false;
       }
-      return;
+      return true;
    }
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
-   method void move(int new_direction, int delay) {
-
+   method bool move(int new_direction, int delay) {
+    var bool fail;
     var int i;
     var SnakeSegment segment;
     var SnakeSegment next_segment;
     var bool to_erase;
 
+    let fail = false;
     let to_erase = true;
     let i = length - 1;    
     let histX = x;
@@ -119,48 +125,71 @@ class Snake {
     // going up is allowed only if we are currently moving left or right
     if (new_direction = 1) {
         if (~(direction = 2)){
-            do moveUp();
+            let fail = moveUp();
+            if (fail) {
+                return fail;
+            }
             do setDirection(new_direction);
         }
         else {
-            do moveDown();
+            let fail = moveDown();
+            if (fail) {
+                return fail;
+            }
         }
     }
     // going down is allowed only if we are currently moving left or right
     if (new_direction = 2) {
         if (~(direction = 1)){
-            do moveDown();
+            let fail = moveDown();
+            if (fail) {
+                return fail;
+            }
             do setDirection(new_direction);
         }
         else {
-            do moveUp();
+            let fail = moveUp();
+            if (fail) {
+                return fail;
+            }
         }
     }
     // going left is allowed only if we are currently moving up or down
     if (new_direction = 3) {
         if (~(direction = 4)){
-            do moveLeft();
+            let fail = moveLeft();
+            if (fail) {
+                return fail;
+            }
             do setDirection(new_direction);
         }
         else {
-            do moveRight();
+            let fail = moveRight();
+            if (fail) {
+                return fail;
+            }
         }
     }
     // going right is allowed only if we are currently moving up or down
     if (new_direction = 4) {
         if (~(direction = 3)){
-            do moveRight();
+            let fail = moveRight();
+            if (fail) {
+                return fail;
+            }
             do setDirection(new_direction);
         }
         else {
-            do moveLeft();
+            let fail = moveLeft();
+            if (fail) {
+                return fail;
+            }
         }
     }
 
     // snake movement
     // starting from last segment we move it forward in place of the 
     // following
-    
     while (i > 0) {
         let segment = snake_segments[i];
         let next_segment = snake_segments[i - 1];
@@ -179,7 +208,7 @@ class Snake {
     }
 
     do Sys.wait(delay);
-    return;
+    return fail;
    }
 
    method int getDirection() {

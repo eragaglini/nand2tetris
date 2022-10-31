@@ -82,6 +82,7 @@ class SnakeGame {
       do drawFood();
       return;
    }
+
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
    method void run() {
@@ -119,7 +120,7 @@ class SnakeGame {
          do Output.printInt(score);
 
          // waits for a key to be pressed
-         do snake.move(direction, delay);
+         let exit = snake.move(direction, delay);
 
          // waits for a key to be pressed
          let key = Keyboard.keyPressed();

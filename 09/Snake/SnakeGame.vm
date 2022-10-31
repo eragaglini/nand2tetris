@@ -249,7 +249,7 @@ push this 1
 push local 3
 push this 2
 call Snake.move 3
-pop temp 0
+pop local 2
 call Keyboard.keyPressed 0
 pop local 1
 push local 1
