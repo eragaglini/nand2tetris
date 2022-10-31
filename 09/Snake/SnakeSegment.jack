@@ -1,0 +1,56 @@
+
+/**
+ * Implements a snake
+ */
+
+class SnakeSegment {
+
+    field int x, y, size;
+
+   /** Constructs a new snake segment. */
+   constructor SnakeSegment new(int Ax, int Ay, int Asize) {
+    let x = Ax;
+    let y = Ay;
+    let size = Asize;
+    do draw();
+    return this;
+   }
+
+   /** Disposes this snake segment. */
+   method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+   }
+
+   /** Draws the snake on the screen. */
+   method void draw() {
+	do Screen.setColor(true);
+    // test
+	//do Screen.drawRectangle(x * size, y * size, (x*size) + size, (y*size) + size);
+    do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
+    return;
+   }
+
+   /** Erase the snake from the screen. */
+   method void erase() {
+	do Screen.setColor(false);
+    // test
+	//do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
+    do Screen.drawRectangle(x * size, y * size, (x*size) + (size - 1), (y*size) + (size - 1));
+    return;
+   }
+   
+   method void move(int Ax, int Ay) {
+    let x = Ax;
+    let y = Ay;
+    do draw();
+    return;
+   }
+
+   method int getX() {
+    return x;
+   }
+   method int getY() {
+    return y;
+   }
+}
