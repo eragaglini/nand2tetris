@@ -6,38 +6,94 @@
 class SnakeGame {
    
    field Snake snake;
-   field int delay;
+   field int delay;    
+   // the XY position of the food pellet
+   field int foodX, foodY;
+
 
    /** Constructs a new snake Game. */
    constructor SnakeGame new() {
 
-   // setup screen
-   //do Screen.clearScreen();
-   do Screen.setColor(true);
-   do Screen.drawLine(0, 239, 511, 239);
-   // snake
-   let snake = Snake.new(206, 128);
-   let delay = 100;
-   return this;
+      // setup screen
+      //do Screen.clearScreen();
+      do Screen.setColor(true);
+      do Screen.drawLine(0, 239, 511, 239);
+      // snake
+      let snake = Snake.new(126, 62);
+      let delay = 100;
+      return this;
+   }
+
+   // draws the food pellet
+   method void drawFood() {
+
+      do Screen.setColor(true);
+      //do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
+      do Screen.drawCircle(foodX*4+2, foodY*4+2, 2);
+      return;
+   }
+
+   // erase the food pellet from the screen
+   method void eraseFood() {
+
+      do Screen.setColor(false);
+      //do Screen.drawCircle((foodX*4)+2, (foodY*4)+2, 2);
+      do Screen.drawCircle(foodX*4, foodY*4, 2);
+      return;
    }
 
    /** Disposes this game. */
    method void dispose() {
+      do snake.dispose();
       do Memory.deAlloc(this);
       return;
+   }
+
+   method bool check_collision_with_snake() {
+      var int snakeLeft, snakeRight, snakeTop, snakeBottom;
+      let snakeLeft = snake.getX();
+      let snakeRight = snake.getX() + 4;
+      let snakeTop = snake.getY();
+      let snakeBottom = snake.getY() + 4;
+      //if ((foodX = snakeX) & (foodY = snakeY)) {
+      if ((foodX+2 = snakeRight) & (foodX-2 = snakeLeft) & (foodY+2 > snakeBottom) & (foodY-2 < snakeTop)){
+            do Output.printString("abbiamo beccato il sybouz");
+            do eraseFood();
+            do snake.draw();
+            return true;
+      }
+      else {
+         return false;
+      }
    }
    
    /** Runs the game: handles the user's inputs and moves the snake accordingly */
    method void run() {
+
+      var int seed;
       var char key;  // the key currently pressed by the user
       var boolean exit;
       var int direction;
       let direction = snake.getDirection();
       let exit = false;
+      let seed = 0;
       // wait for space to start
       while (~(key = 32)) {
          let key = Keyboard.keyPressed();
+         let seed = seed + 1;
       }
+
+      do Utils.initRandomSeed(seed);
+      // get food coordinates
+      let foodX = Utils.random(128);
+      let foodY = Utils.random(59);
+      while  (check_collision_with_snake()) {
+      // get food coordinates
+      let foodX = Utils.random(128);
+      let foodY = Utils.random(59);
+
+      }
+      do drawFood();
 
       while (~exit) {
          // waits for a key to be pressed

@@ -26,7 +26,6 @@ class Utils {
 	
 	/*
 	* Generate a pseudo-random number in the range 0-limit
-	*/
 	function int random(int limit) {
 		var int res;
 		let res = Utils.modulo(_lastNum, limit);
@@ -34,6 +33,33 @@ class Utils {
 		let _lastNum = Utils.moduloPower2(_lastNum, 1024);
 		return res;
 	}
+	*/
+
+	function int rand() {
+        /** return a random number in the range 0..32767 */
+        let _lastNum = _lastNum + 20251;
+        if (_lastNum < 0) {
+            let _lastNum = _lastNum - 32767 - 1;
+        }
+        return _lastNum;
+    }
+
+	function int random(int range) {
+        /** return a random number in the range 0..range */
+        var int mask;
+        var int ret;
+		var int rand_num;
+		
+        let mask = 1;
+        while (mask < range) {
+            let mask = mask * 2 + 1;
+        }
+        let ret = Utils.rand() & mask;
+        while (ret > range) {
+            let ret = Utils.rand() & mask;
+        }
+        return ret;
+    }
 	
 	/*
 	* Check if given number fulfill the condition a <= num <= b
