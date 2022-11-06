@@ -4,33 +4,92 @@ import os
 
 from JackCompiler.JackTokenizer import JackTokenizer
 
+
 @pytest.fixture
 def tokenizer():
-    return JackTokenizer("/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack")
+    return JackTokenizer(
+        "/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack"
+    )
+
 
 def test_comment_remover(tokenizer):
-    assert tokenizer.comment_remover("let x = x + 1; // commento di prova test comment_remove\n") == "let x = x + 1;"    
-    assert tokenizer.comment_remover("let x = x + 1; /* commento di prova test comment_remove */\n") == "let x = x + 1;"
+    assert (
+        tokenizer.comment_remover(
+            "let x = x + 1; // commento di prova test comment_remove\n"
+        )
+        == "let x = x + 1;"
+    )
+    assert (
+        tokenizer.comment_remover(
+            "let x = x + 1; /* commento di prova test comment_remove */\n"
+        )
+        == "let x = x + 1;"
+    )
     assert tokenizer.comment_remover("/* lungo commento \n di prova */") == ""
+
 
 def test_get_tokens(tokenizer):
     assert tokenizer.token_lst == [
-        'class', 'Main', '{', \
-            'static', 'boolean', 'test', ';', \
-            'function', 'void', 'main', '(', ')', '{', \
-                'var', 'SquareGame', 'game', ';', \
-                'let', 'game', '=', 'game', ';', \
-                'do', 'game', '.', 'run', '(', ')', ';', \
-                'do', 'game', '.', 'dispose', '(', ')', ';', \
-                'return', ';',  \
-            '}', \
-            'function', 'void', 'more', '(', ')', '{', \
-                'var', 'boolean', 'b', ';', \
-                'if', '(', 'b', ')', '{', \
-                '}', \
-                'else', '{', \
-                '}', \
-                'return', ';', \
-            '}', \
-        '}'
+        "class",
+        "Main",
+        "{",
+        "static",
+        "boolean",
+        "test",
+        ";",
+        "function",
+        "void",
+        "main",
+        "(",
+        ")",
+        "{",
+        "var",
+        "SquareGame",
+        "game",
+        ";",
+        "let",
+        "game",
+        "=",
+        "game",
+        ";",
+        "do",
+        "game",
+        ".",
+        "run",
+        "(",
+        ")",
+        ";",
+        "do",
+        "game",
+        ".",
+        "dispose",
+        "(",
+        ")",
+        ";",
+        "return",
+        ";",
+        "}",
+        "function",
+        "void",
+        "more",
+        "(",
+        ")",
+        "{",
+        "var",
+        "boolean",
+        "b",
+        ";",
+        "if",
+        "(",
+        "b",
+        ")",
+        "{",
+        "}",
+        "else",
+        "{",
+        "}",
+        "return",
+        ";",
+        "}",
+        "}",
     ]
