@@ -4,15 +4,16 @@ import os
 
 from JackCompiler.JackTokenizer import JackTokenizer
 
-tokenizer = JackTokenizer("/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack")
+@pytest.fixture
+def tokenizer():
+    return JackTokenizer("/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack")
 
-def test_comment_remover():
-    tokenizer = JackTokenizer("/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack")
+def test_comment_remover(tokenizer):
     assert tokenizer.comment_remover("let x = x + 1; // commento di prova test comment_remove\n") == "let x = x + 1;"    
     assert tokenizer.comment_remover("let x = x + 1; /* commento di prova test comment_remove */\n") == "let x = x + 1;"
     assert tokenizer.comment_remover("/* lungo commento \n di prova */") == ""
 
-def test_initialize_tokenizer():
+def test_initialize_tokenizer(tokenizer):
     assert tokenizer.tokens == [
         'class', 'Main', '{', \
             'static', 'boolean', 'test', ';', \
