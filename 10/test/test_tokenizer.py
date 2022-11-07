@@ -27,8 +27,18 @@ def test_comment_remover(tokenizer):
     )
     assert tokenizer.comment_remover("/* lungo commento \n di prova */") == ""
 
+def test_split_line(tokenizer):
+    assert tokenizer.split_words('let length = Keyboard.readInt("HOW MANY NUMBERS? ");') \
+        == ['let', 'length', '=', 'Keyboard.readInt(', '"HOW MANY NUMBERS? "', ');']
+    assert tokenizer.split_words('do Output.printInt(sum / length);') \
+        == ['do', 'Output.printInt(sum', '/', 'length);']
 
-def test_get_tokens(tokenizer):
+def test_word_dict(tokenizer):
+    assert tokenizer.word_dict('0') == {'integerConstant': '0'}
+    assert tokenizer.word_dict('test_identifier') == {'identifier': 'test_identifier'}
+    assert tokenizer.word_dict('class') == {'keyword': 'class'}
+
+def test_get_token_lst_and_dict(tokenizer):
     assert tokenizer.token_lst == [
         "class",
         "Main",

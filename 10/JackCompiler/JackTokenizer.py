@@ -1,7 +1,8 @@
+import sys
 import re
 import ntpath
 from dict2xml import dict2xml
-from xmlformatter import Formatter
+from itertools import groupby
 
 # String constants:
 TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
@@ -96,41 +97,59 @@ class JackTokenizer:
         )
         return re.sub(pattern, replacer, text).strip()
 
+    def word_dict(self, word_str):
+        return {
+            "keyword"
+            if word_str.upper() in TOKEN_KEYWORDS
+            # else "identifier": identifier
+            else "identifier"
+            if not word_str.isnumeric()
+            else "integerConstant": word_str
+        }
+
     def get_tokens(self, word):
         word_token_lst = []
         word_token_dict = []
-        identifier = ""
-        if word in TOKEN_KEYWORDS:
-            word_token_lst.append(word)
-            word_token_dict.append({"keyword": " " + word + " "})
+        word_str = ""
         for el in word:
             if el not in SYMBOLS:
-                identifier += el
+                word_str += el
             else:
-                if len(identifier) >= 1:
-                    word_token_lst.append(identifier)
-                    word_token_dict.append(
-                        {
-                            "keyword"
-                            if identifier.upper() in TOKEN_KEYWORDS
-                            else "identifier": identifier
-                        }
-                    )
-                    identifier = ""
+                if len(word_str) >= 1:
+                    word_token_lst.append(word_str)
+                    word_token_dict.append(self.word_dict(word_str))
+                    word_str = ""
 
                 word_token_lst.append(el)
                 word_token_dict.append({"symbol": " " + el + " "})
-        if len(identifier) >= 1:
-            word_token_lst.append(identifier)
-            word_token_dict.append(
-                {
-                    "keyword"
-                    if identifier.upper() in TOKEN_KEYWORDS
-                    else "identifier": identifier
-                }
-            )
-            identifier = ""
+        if len(word_str) >= 1:
+            word_token_lst.append(word_str)
+            word_token_dict.append(self.word_dict(word_str))
+            word_str = ""
         return word_token_lst, word_token_dict
+
+    def split_words(self, line):
+        # remove comments and create list of words
+        line = self.comment_remover(line)
+        if '"' not in line:
+            return line.split()
+        else:
+            # if there are string constants we need to split the line differently
+            line = re.split(r"(plus|\"|\")", line)
+            sep = '"'
+            result = []
+            for i in range(len(line)):
+                if line[i] == '"':
+                    continue
+                elif line[i - 1] == '"':
+                    if i + 1 in range(len(line)):
+                        if line[i + 1] == '"':
+                            result.append(sep + line[i] + sep)
+                    else:
+                        result += line[i].split()
+                else:
+                    result += line[i].split()
+            return result
 
     def get_token_lst_and_dict(self, path):
         with open(path) as file:
@@ -139,8 +158,12 @@ class JackTokenizer:
             # reading each line
             for line in file:
                 # reading each word
-                for word in self.comment_remover(line).split():
-                    if word.upper() in TOKEN_KEYWORDS:
+                line = self.split_words(line)
+                for word in line:
+                    if '"' in word:
+                        token_lst.append(word)
+                        token_dicts.append({"stringConstant": word[1:-1]})
+                    elif word.upper() in TOKEN_KEYWORDS:
                         token_lst.append(word)
                         # token_dicts.append({'keyword': word})
                         token_dicts.append({"keyword": " " + word + " "})
@@ -149,4 +172,19 @@ class JackTokenizer:
                         word_token_lst, word_token_dict = self.get_tokens(word)
                         token_lst += word_token_lst
                         token_dicts += word_token_dict
+
         return token_lst, token_dicts
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Error. Missing argument [filename]")
+        return -1
+    else:
+        filename = sys.argv[1]
+
+    jt = JackTokenizer(filename)
+
+
+if __name__ == "__main__":
+    main()
