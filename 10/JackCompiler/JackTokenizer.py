@@ -2,7 +2,7 @@ import sys
 import re
 import ntpath
 from dict2xml import dict2xml
-from itertools import groupby
+import xml.etree.ElementTree as ET
 
 # String constants:
 TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
@@ -68,19 +68,34 @@ class JackTokenizer:
             "".join(dict2xml(e, wrap="tokens") for e in self.token_dicts),
         )
 
-        file_name = self.path_leaf(path).rsplit(".", 1)[0]
-        with open("{}T.xml".format(file_name), "w") as f:
+        file_name = "{}T.xml".format(self.path_leaf(path).rsplit(".", 1)[0])
+        with open(file_name, "w") as f:
             f.write("<{0}>{1}</{0}>".format(xml_title, inner_xml))
 
-        with open("{}T.xml".format(file_name)) as xmlfile:
+        with open(file_name) as xmlfile:
             lines = [line for line in xmlfile if line.strip() != ""]
 
-        with open(("{}T.xml".format(file_name)), "w") as xmlfile:
+        with open((file_name), "w") as xmlfile:
             xmlfile.writelines(lines)
+
+        self._filename = file_name
+        tree = ET.parse(self._filename)
+        self._root = tree.getroot()
+        self._cursor = 0
+
+    def advance(self):
+        self._cursor += 1
+
+    def get_next_token(self):
+        return(self._root[self._cursor])
+
+    def has_more_tokens(self):
+        return self._cursor < len(self._root)
 
     def path_leaf(self, path):
         head, tail = ntpath.split(path)
         return tail or ntpath.basename(head)
+
 
     # removes all comments from input text
     def comment_remover(self, text):

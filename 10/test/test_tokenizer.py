@@ -1,6 +1,5 @@
 # run with python3 -m pytest -v
 import pytest
-import os
 
 from JackCompiler.JackTokenizer import JackTokenizer
 
