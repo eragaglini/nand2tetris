@@ -4,6 +4,8 @@ import ntpath
 from dict2xml import dict2xml
 import xml.etree.ElementTree as ET
 
+import pdb
+
 # String constants:
 TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
 
@@ -98,19 +100,32 @@ class JackTokenizer:
 
 
     # removes all comments from input text
-    def comment_remover(self, text):
-        def replacer(match):
-            s = match.group(0)
-            if s.startswith("/"):
-                return " "  # note: a space and not an empty string
-            else:
-                return s
-
-        pattern = re.compile(
-            r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
-            re.DOTALL | re.MULTILINE,
-        )
-        return re.sub(pattern, replacer, text).strip()
+    def comment_remover(self, path):
+        with open(path) as file:
+            lines = []
+            to_skip_line = False
+            for line in file:
+                line = line.strip()
+                if not to_skip_line:
+                    # single line comment
+                    if line.startswith('//'):
+                        continue
+                    # starting a multi-line comment
+                    if line.startswith('/*'):
+                        if not line.endswith('*/'):
+                            to_skip_line = True
+                            continue
+                        else:
+                            continue
+                    else:
+                        if line != '':
+                            lines.append(line.split("//")[0])
+                else:
+                    if line.endswith('*/'):
+                        # closing a multi-line comment
+                        to_skip_line = False
+        return lines
+  
 
     def word_dict(self, word_str):
         return {
@@ -145,7 +160,7 @@ class JackTokenizer:
 
     def split_words(self, line):
         # remove comments and create list of words
-        line = self.comment_remover(line)
+        #line = self.comment_remover(line)
         if '"' not in line:
             return line.split()
         else:
@@ -167,27 +182,28 @@ class JackTokenizer:
             return result
 
     def get_token_lst_and_dict(self, path):
-        with open(path) as file:
-            token_lst = []
-            token_dicts = []
-            # reading each line
-            for line in file:
-                # reading each word
-                line = self.split_words(line)
-                for word in line:
-                    if '"' in word:
-                        token_lst.append(word)
-                        token_dicts.append({"stringConstant": word[1:-1]})
-                    elif word.upper() in TOKEN_KEYWORDS:
-                        token_lst.append(word)
-                        # token_dicts.append({'keyword': word})
-                        token_dicts.append({"keyword": " " + word + " "})
-                    # get every token contained in every element of list
-                    else:
-                        word_token_lst, word_token_dict = self.get_tokens(word)
-                        token_lst += word_token_lst
-                        token_dicts += word_token_dict
+        token_lst = []
+        token_dicts = []
+        # remove all comments
+        lines = self.comment_remover(path)
 
+        # reading each line
+        for line in lines:
+            # reading each word
+            line = self.split_words(line)
+            for word in line:
+                if '"' in word:
+                    token_lst.append(word)
+                    token_dicts.append({"stringConstant": word[1:-1]})
+                elif word.upper() in TOKEN_KEYWORDS:
+                    token_lst.append(word)
+                    # token_dicts.append({'keyword': word})
+                    token_dicts.append({"keyword": " " + word + " "})
+                # get every token contained in every element of list
+                else:
+                    word_token_lst, word_token_dict = self.get_tokens(word)
+                    token_lst += word_token_lst
+                    token_dicts += word_token_dict
         return token_lst, token_dicts
 
 
