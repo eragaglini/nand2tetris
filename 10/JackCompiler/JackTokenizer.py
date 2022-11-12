@@ -94,6 +94,34 @@ class JackTokenizer:
     def has_more_tokens(self):
         return self._cursor < len(self._root)
 
+    def token_type(self):
+        return self.get_next_token().tag
+
+    def check_and_return_value(self,token_type):
+        if self.token_type() == token_type:
+            if token_type != 'stringConstant':
+                return self.get_next_token().text.strip()
+            else:
+                return self.get_next_token().text 
+        else:
+            raise ValueError('Error, selected element is not of type: {}'.format(token_type))
+
+    def symbol(self):
+        return self.check_and_return_value('symbol')
+
+    def keyword(self):
+        return self.check_and_return_value('keyword')
+
+    def intVal(self):
+        return self.check_and_return_value('integerConstant')
+        
+    def stringVal(self):
+        return self.check_and_return_value('stringConstant')
+
+    def identifier(self):
+        return self.check_and_return_value('identifier')
+
+
     def path_leaf(self, path):
         head, tail = ntpath.split(path)
         return tail or ntpath.basename(head)

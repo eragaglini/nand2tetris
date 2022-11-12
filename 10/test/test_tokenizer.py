@@ -1,16 +1,13 @@
 # run with python3 -m pytest -v
 import pytest
 
-
 from JackCompiler.JackTokenizer import JackTokenizer
-
 
 @pytest.fixture
 def tokenizer():
     return JackTokenizer(
         "/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack"
     )
-
 
 def test_split_line(tokenizer):
     assert tokenizer.split_words(
@@ -96,7 +93,7 @@ def test_get_token_lst_and_dict(tokenizer):
         "}",
     ]
 
-'''
+
 def test_has_more_tokens(tokenizer):
     for i in range(61):
         tokenizer.advance()
@@ -128,4 +125,3 @@ def test_symbol(tokenizer):
         tokenizer.advance()
     assert tokenizer.token_type() == "symbol"
     assert tokenizer.symbol() == ";"
-'''
