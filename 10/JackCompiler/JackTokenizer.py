@@ -89,7 +89,7 @@ class JackTokenizer:
         self._cursor += 1
 
     def get_next_token(self):
-        return(self._root[self._cursor])
+        return self._root[self._cursor]
 
     def has_more_tokens(self):
         return self._cursor < len(self._root)
@@ -97,35 +97,40 @@ class JackTokenizer:
     def token_type(self):
         return self.get_next_token().tag
 
-    def check_and_return_value(self,token_type):
+    def token_is_primitive_type(self):
+        return self.get_next_token().text.upper().strip() in ["INT", "CHAR", "BOOLEAN", "VOID"]
+
+    def check_and_return_value(self, token_type):
         if self.token_type() == token_type:
-            if token_type != 'stringConstant':
+            if token_type != "stringConstant":
                 return self.get_next_token().text.strip()
             else:
-                return self.get_next_token().text 
+                return self.get_next_token().text
         else:
-            raise ValueError('Error, selected element is not of type: {}'.format(token_type))
+            raise ValueError(
+                "Error, element '{}' at position {} is not of type: {}. It's of type: {}".format(
+                    self.get_next_token().text.strip(), self._cursor, token_type, self.token_type()
+                )
+            )
 
     def symbol(self):
-        return self.check_and_return_value('symbol')
+        return self.check_and_return_value("symbol")
 
     def keyword(self):
-        return self.check_and_return_value('keyword')
+        return self.check_and_return_value("keyword")
 
     def intVal(self):
-        return self.check_and_return_value('integerConstant')
-        
+        return self.check_and_return_value("integerConstant")
+
     def stringVal(self):
-        return self.check_and_return_value('stringConstant')
+        return self.check_and_return_value("stringConstant")
 
     def identifier(self):
-        return self.check_and_return_value('identifier')
-
+        return self.check_and_return_value("identifier")
 
     def path_leaf(self, path):
         head, tail = ntpath.split(path)
         return tail or ntpath.basename(head)
-
 
     # removes all comments from input text
     def comment_remover(self, path):
@@ -136,24 +141,23 @@ class JackTokenizer:
                 line = line.strip()
                 if not to_skip_line:
                     # single line comment
-                    if line.startswith('//'):
+                    if line.startswith("//"):
                         continue
                     # starting a multi-line comment
-                    if line.startswith('/*'):
-                        if not line.endswith('*/'):
+                    if line.startswith("/*"):
+                        if not line.endswith("*/"):
                             to_skip_line = True
                             continue
                         else:
                             continue
                     else:
-                        if line != '':
+                        if line != "":
                             lines.append(line.split("//")[0])
                 else:
-                    if line.endswith('*/'):
+                    if line.endswith("*/"):
                         # closing a multi-line comment
                         to_skip_line = False
         return lines
-  
 
     def word_dict(self, word_str):
         return {
@@ -187,8 +191,7 @@ class JackTokenizer:
         return word_token_lst, word_token_dict
 
     def split_words(self, line):
-        # remove comments and create list of words
-        #line = self.comment_remover(line)
+        # create list of words
         if '"' not in line:
             return line.split()
         else:
