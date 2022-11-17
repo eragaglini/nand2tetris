@@ -11,3 +11,4 @@ tomli==2.0.1
 dict2xml
 xmlformatter
 black
+pre-commit

@@ -97,8 +97,16 @@ class JackTokenizer:
     def token_type(self):
         return self.get_next_token().tag
 
+    def token_matches_value(self,value):
+        return self.get_next_token().text.strip() == value
+
     def token_is_primitive_type(self):
-        return self.get_next_token().text.upper().strip() in ["INT", "CHAR", "BOOLEAN", "VOID"]
+        return self.get_next_token().text.upper().strip() in [
+            "INT",
+            "CHAR",
+            "BOOLEAN",
+            "VOID",
+        ]
 
     def check_and_return_value(self, token_type):
         if self.token_type() == token_type:
@@ -109,7 +117,10 @@ class JackTokenizer:
         else:
             raise ValueError(
                 "Error, element '{}' at position {} is not of type: {}. It's of type: {}".format(
-                    self.get_next_token().text.strip(), self._cursor, token_type, self.token_type()
+                    self.get_next_token().text.strip(),
+                    self._cursor,
+                    token_type,
+                    self.token_type(),
                 )
             )
 
