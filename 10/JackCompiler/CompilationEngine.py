@@ -68,7 +68,7 @@ class CompilationEngine:
         self.compile_var_dec(var_dec)
 
     def compile_parameter_list(self, parameterList):
-        while not self.tokenizer.token_matches_value(')'):
+        while not self.tokenizer.token_matches_value(")"):
             self._write_keyword(parameterList)  # Type
             self._write_identifier(parameterList)  # Name
             # More parameters?
@@ -87,15 +87,15 @@ class CompilationEngine:
         parameterList = ET.SubElement(subroutineDec, "parameterList")
         self.compile_parameter_list(parameterList)
 
-        self._write_symbol(subroutineDec) # ')'
+        self._write_symbol(subroutineDec)  # ')'
 
         # function body
         # Body:
-        '''
-		self._startSection("subroutineBody")
-		self._writeSymbol()         # '{'
+        """
+        subroutineBody = ET.SubElement(subroutineDec, "subroutineBody")
+		self._writeSymbol(subroutineBody)         # '{'
 
-		if self.tokenizer.keyWord() == "VAR":
+		if self.tokenizer.keyword() == "VAR":
 			self.compileVarDec() 
 
 		if not self._tokenMatchesSymbol('}'):
@@ -104,9 +104,7 @@ class CompilationEngine:
 		self._endSection("subroutineBody")
 
 		self._endSection("subroutineDec")
-        '''
-
-
+        """
 
     def compile_class(self):
         self._write_keyword(self.root)  # "Class"
