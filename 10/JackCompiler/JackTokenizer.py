@@ -97,7 +97,7 @@ class JackTokenizer:
     def token_type(self):
         return self.get_next_token().tag
 
-    def token_matches_value(self,value):
+    def token_matches_value(self, value):
         return self.get_next_token().text.strip() == value
 
     def token_is_primitive_type(self):
@@ -110,7 +110,9 @@ class JackTokenizer:
 
     def check_and_return_value(self, token_type):
         if self.token_type() == token_type:
-            if token_type != "stringConstant":
+            if token_type != "stringConstant" and token_type != "identifier":
+                return self.get_next_token().text.upper().strip()
+            elif token_type == "identifier":
                 return self.get_next_token().text.strip()
             else:
                 return self.get_next_token().text

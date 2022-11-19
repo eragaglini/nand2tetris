@@ -5,6 +5,8 @@ from xml.dom import minidom
 import xml.etree.cElementTree as ET
 import JackTokenizer
 
+import pdb
+
 
 class CompilationEngine:
     def __init__(self, inFilename):
@@ -75,6 +77,41 @@ class CompilationEngine:
             if self.tokenizer.symbol() == ",":
                 self._write_symbol(parameterList)
 
+    def compile_let(self, statements):
+        pass
+
+    def compile_return(self, statements):
+        pass
+
+    def compile_do(self, statements):
+        pass
+
+    def compile_if(self, statements):
+        pass
+
+    def compile_while(self, statements):
+        pass
+
+    def compile_subroutine_statements(self, subroutineBody):
+        statements = ET.SubElement(subroutineBody, "statements")
+        # subroutine body can have differents kinds of statements:
+        while not self.tokenizer.token_matches_value("}"):
+            # let statements
+            if self.tokenizer.keyword() == "LET":
+                self.compile_let(statements)
+            # return statements
+            elif self.tokenizer.keyword() == "RETURN":
+                self.compile_return(statements)
+            # do statements
+            elif self.tokenizer.keyword() == "DO":
+                self.compile_do(statements)
+            # if statements
+            elif self.tokenizer.keyword() == "IF":
+                self.compile_if(statements)
+            # while statements
+            elif self.tokenizer.keyword() == "WHILE":
+                self.compile_while(statements)
+
     def compile_subroutine(self):
         subroutineDec = ET.SubElement(self.root, "subroutineDec")
         # function signature
@@ -89,22 +126,21 @@ class CompilationEngine:
 
         self._write_symbol(subroutineDec)  # ')'
 
-        # function body
+        # function body can be comprised of variable declaration and statements
         # Body:
-        """
         subroutineBody = ET.SubElement(subroutineDec, "subroutineBody")
-		self._writeSymbol(subroutineBody)         # '{'
+        self._write_symbol(subroutineBody)  # '{'
 
-		if self.tokenizer.keyword() == "VAR":
-			self.compileVarDec() 
+        # function variable definitions
+        if self.tokenizer.keyword() == "VAR":
+            var_dec = ET.SubElement(subroutineBody, "varDec")
+            self.compile_var_dec(var_dec)
 
-		if not self._tokenMatchesSymbol('}'):
-			self.compileStatements()
-		self._writeSymbol()         # '}' (end of subroutine body.)
-		self._endSection("subroutineBody")
+        # function statements
+        if not self.tokenizer.token_matches_value("}"):
+            self.compile_subroutine_statements(subroutineBody)
 
-		self._endSection("subroutineDec")
-        """
+        self._write_symbol(subroutineBody)  # '}' (end of subroutine body.)
 
     def compile_class(self):
         self._write_keyword(self.root)  # "Class"
@@ -112,11 +148,11 @@ class CompilationEngine:
         self._write_symbol(self.root)  # '{'
 
         # Variable declarations:
-        while self.tokenizer.keyword().upper() in ["STATIC", "FIELD"]:
+        while self.tokenizer.keyword() in ["STATIC", "FIELD"]:
             self.compile_class_var_dec()
 
         # Class' subroutines declarations:
-        while self.tokenizer.keyword().upper() in [
+        while self.tokenizer.keyword() in [
             "CONSTRUCTOR",
             "FUNCTION",
             "METHOD",

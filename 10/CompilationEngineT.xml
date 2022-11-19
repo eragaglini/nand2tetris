@@ -1,0 +1,841 @@
+<tokens>
+  <identifier>import</identifier>
+  <identifier>sys</identifier>
+  <identifier>import</identifier>
+  <identifier>os</identifier>
+  <identifier>import</identifier>
+  <identifier>ntpath</identifier>
+  <identifier>from</identifier>
+  <identifier>xml</identifier>
+  <symbol> . </symbol>
+  <identifier>dom</identifier>
+  <identifier>import</identifier>
+  <identifier>minidom</identifier>
+  <identifier>import</identifier>
+  <identifier>xml</identifier>
+  <symbol> . </symbol>
+  <identifier>etree</identifier>
+  <symbol> . </symbol>
+  <identifier>cElementTree</identifier>
+  <identifier>as</identifier>
+  <identifier>ET</identifier>
+  <identifier>import</identifier>
+  <identifier>JackTokenizer</identifier>
+  <identifier>import</identifier>
+  <identifier>pdb</identifier>
+  <keyword> class </keyword>
+  <identifier>CompilationEngine:</identifier>
+  <identifier>def</identifier>
+  <identifier>__init__</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>inFilename</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> = </symbol>
+  <identifier>JackTokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>JackTokenizer</identifier>
+  <symbol> ( </symbol>
+  <identifier>inFilename</identifier>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>Element</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>class</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compile_class</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>tree</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>ElementTree</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>outFilename</identifier>
+  <symbol> = </symbol>
+  <stringConstant>{}/{}.xml</stringConstant>
+  <symbol> . </symbol>
+  <identifier>format</identifier>
+  <symbol> ( </symbol>
+  <identifier>os</identifier>
+  <symbol> . </symbol>
+  <identifier>getcwd</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> , </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>path_leaf</identifier>
+  <symbol> ( </symbol>
+  <identifier>inFilename</identifier>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>rsplit</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>.</stringConstant>
+  <symbol> , </symbol>
+  <integerConstant>1</integerConstant>
+  <symbol> ) </symbol>
+  <symbol> [ </symbol>
+  <integerConstant>0</integerConstant>
+  <symbol> ] </symbol>
+  <symbol> ) </symbol>
+  <identifier>xmlstr</identifier>
+  <symbol> = </symbol>
+  <identifier>minidom</identifier>
+  <symbol> . </symbol>
+  <identifier>parseString</identifier>
+  <symbol> ( </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>tostring</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>toprettyxml</identifier>
+  <symbol> ( </symbol>
+  <identifier>indent</identifier>
+  <symbol> = </symbol>
+  <stringConstant>   </stringConstant>
+  <symbol> ) </symbol>
+  <identifier>with</identifier>
+  <identifier>open</identifier>
+  <symbol> ( </symbol>
+  <identifier>outFilename</identifier>
+  <symbol> , </symbol>
+  <stringConstant>w</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>as</identifier>
+  <identifier>f:</identifier>
+  <identifier>f</identifier>
+  <symbol> . </symbol>
+  <identifier>write</identifier>
+  <symbol> ( </symbol>
+  <identifier>xmlstr</identifier>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>path_leaf</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>path</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>head</identifier>
+  <symbol> , </symbol>
+  <identifier>tail</identifier>
+  <symbol> = </symbol>
+  <identifier>ntpath</identifier>
+  <symbol> . </symbol>
+  <identifier>split</identifier>
+  <symbol> ( </symbol>
+  <identifier>path</identifier>
+  <symbol> ) </symbol>
+  <keyword> return </keyword>
+  <identifier>tail</identifier>
+  <identifier>or</identifier>
+  <identifier>ntpath</identifier>
+  <symbol> . </symbol>
+  <identifier>basename</identifier>
+  <symbol> ( </symbol>
+  <identifier>head</identifier>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>root</identifier>
+  <symbol> , </symbol>
+  <stringConstant>keyword</stringConstant>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>text</identifier>
+  <symbol> = </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>keyword</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>lower</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>advance</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>root</identifier>
+  <symbol> , </symbol>
+  <stringConstant>identifier</stringConstant>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>text</identifier>
+  <symbol> = </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>identifier</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>advance</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>symbol</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <keyword> if </keyword>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <identifier>'</identifier>
+  <identifier>':</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <stringConstant>&amp;quot;</stringConstant>
+  <keyword> if </keyword>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>&amp;</stringConstant>
+  <identifier>:</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <stringConstant>&amp;amp;</stringConstant>
+  <identifier>elif</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>&lt;</stringConstant>
+  <identifier>:</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <stringConstant>&amp;lt;</stringConstant>
+  <identifier>elif</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>&gt;</stringConstant>
+  <identifier>:</identifier>
+  <identifier>symbol</identifier>
+  <symbol> = </symbol>
+  <stringConstant>&amp;gt;</stringConstant>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>root</identifier>
+  <symbol> , </symbol>
+  <stringConstant>symbol</stringConstant>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>text</identifier>
+  <symbol> = </symbol>
+  <identifier>symbol</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>advance</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>_write_type</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <keyword> if </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>token_is_primitive_type</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>else:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>compile_var_dec</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <keyword> field </keyword>
+  <identifier>or</identifier>
+  <keyword> static </keyword>
+  <identifier>or</identifier>
+  <keyword> var </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_type</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>type</identifier>
+  <identifier>of</identifier>
+  <identifier>variable</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>identifier</identifier>
+  <identifier>of</identifier>
+  <identifier>variable</identifier>
+  <identifier>#</identifier>
+  <identifier>Are</identifier>
+  <identifier>there</identifier>
+  <identifier>more</identifier>
+  <identifier>variables</identifier>
+  <identifier>in</identifier>
+  <identifier>the</identifier>
+  <identifier>same</identifier>
+  <identifier>line?</identifier>
+  <keyword> while </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>symbol</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>,</stringConstant>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <keyword>Var</keyword>
+  <symbol> . </symbol>
+  <identifier>name</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <symbol> ; </symbol>
+  <identifier>def</identifier>
+  <identifier>compile_class_var_dec</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>var_dec</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> , </symbol>
+  <stringConstant>classVarDec</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compile_var_dec</identifier>
+  <symbol> ( </symbol>
+  <identifier>var_dec</identifier>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>compile_parameter_list</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> , </symbol>
+  <identifier>parameterList</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <keyword> while </keyword>
+  <identifier>not</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>token_matches_value</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>)</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>parameterList</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>Type</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>parameterList</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>Name</identifier>
+  <identifier>#</identifier>
+  <identifier>More</identifier>
+  <identifier>parameters?</identifier>
+  <keyword> if </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>symbol</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>,</stringConstant>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>parameterList</identifier>
+  <symbol> ) </symbol>
+  <identifier>def</identifier>
+  <identifier>compile_subroutine</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>print</identifier>
+  <symbol> ( </symbol>
+  <identifier>'compile</identifier>
+  <identifier>subroutine'</identifier>
+  <symbol> ) </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> , </symbol>
+  <stringConstant>subroutineDec</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <keyword> function </keyword>
+  <identifier>signature</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <keyword>constructor</keyword>
+  <symbol> , </symbol>
+  <keyword> method </keyword>
+  <identifier>of</identifier>
+  <keyword> function </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_type</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <keyword> Return </keyword>
+  <identifier>type</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>subroutine</identifier>
+  <identifier>identifier</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> ( </symbol>
+  <identifier>'</identifier>
+  <identifier>#</identifier>
+  <identifier>parameter</identifier>
+  <identifier>list</identifier>
+  <identifier>parameterList</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> , </symbol>
+  <stringConstant>parameterList</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compile_parameter_list</identifier>
+  <symbol> ( </symbol>
+  <identifier>parameterList</identifier>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> ) </symbol>
+  <identifier>'</identifier>
+  <identifier>#</identifier>
+  <keyword> function </keyword>
+  <identifier>body</identifier>
+  <identifier>#</identifier>
+  <identifier>Body:</identifier>
+  <stringConstant></stringConstant>
+  <stringConstant></stringConstant>
+  <identifier>subroutineBody</identifier>
+  <symbol> = </symbol>
+  <identifier>ET</identifier>
+  <symbol> . </symbol>
+  <identifier>SubElement</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineDec</identifier>
+  <symbol> , </symbol>
+  <stringConstant>subroutineBody</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_writeSymbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>subroutineBody</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> { </symbol>
+  <identifier>'</identifier>
+  <keyword> if </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>keyword</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>VAR</stringConstant>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compileVarDec</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <keyword> if </keyword>
+  <identifier>not</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_tokenMatchesSymbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>'</identifier>
+  <symbol> } </symbol>
+  <identifier>'</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compileStatements</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_writeSymbol</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> } </symbol>
+  <identifier>'</identifier>
+  <symbol> ( </symbol>
+  <identifier>end</identifier>
+  <identifier>of</identifier>
+  <identifier>subroutine</identifier>
+  <identifier>body</identifier>
+  <symbol> . </symbol>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_endSection</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>subroutineBody</stringConstant>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_endSection</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>subroutineDec</stringConstant>
+  <symbol> ) </symbol>
+  <stringConstant></stringConstant>
+  <stringConstant></stringConstant>
+  <identifier>def</identifier>
+  <identifier>compile_class</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_keyword</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <stringConstant>Class</stringConstant>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_identifier</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>className</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> { </symbol>
+  <identifier>'</identifier>
+  <identifier>#</identifier>
+  <identifier>Variable</identifier>
+  <identifier>declarations:</identifier>
+  <keyword> while </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>keyword</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>upper</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>in</identifier>
+  <symbol> [ </symbol>
+  <stringConstant>STATIC</stringConstant>
+  <stringConstant>, </stringConstant>
+  <stringConstant>FIELD</stringConstant>
+  <symbol> ] </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compile_class_var_dec</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>Class'</identifier>
+  <identifier>subroutines</identifier>
+  <identifier>declarations:</identifier>
+  <keyword> while </keyword>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>tokenizer</identifier>
+  <symbol> . </symbol>
+  <identifier>keyword</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <symbol> . </symbol>
+  <identifier>upper</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>in</identifier>
+  <symbol> [ </symbol>
+  <stringConstant>CONSTRUCTOR</stringConstant>
+  <symbol> , </symbol>
+  <stringConstant>FUNCTION</stringConstant>
+  <symbol> , </symbol>
+  <stringConstant>METHOD</stringConstant>
+  <symbol> , </symbol>
+  <stringConstant>VOID</stringConstant>
+  <symbol> , </symbol>
+  <symbol> ] </symbol>
+  <identifier>:</identifier>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>compile_subroutine</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>_write_symbol</identifier>
+  <symbol> ( </symbol>
+  <identifier>self</identifier>
+  <symbol> . </symbol>
+  <identifier>root</identifier>
+  <symbol> ) </symbol>
+  <identifier>#</identifier>
+  <identifier>'</identifier>
+  <symbol> } </symbol>
+  <identifier>'</identifier>
+  <identifier>def</identifier>
+  <identifier>main</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+  <identifier>:</identifier>
+  <keyword> if </keyword>
+  <identifier>len</identifier>
+  <symbol> ( </symbol>
+  <identifier>sys</identifier>
+  <symbol> . </symbol>
+  <identifier>argv</identifier>
+  <symbol> ) </symbol>
+  <symbol> &lt; </symbol>
+  <identifier>2:</identifier>
+  <identifier>print</identifier>
+  <symbol> ( </symbol>
+  <stringConstant>Error. Missing argument [filename]</stringConstant>
+  <symbol> ) </symbol>
+  <keyword> return </keyword>
+  <symbol> - </symbol>
+  <integerConstant>1</integerConstant>
+  <identifier>else:</identifier>
+  <identifier>filename</identifier>
+  <symbol> = </symbol>
+  <identifier>sys</identifier>
+  <symbol> . </symbol>
+  <identifier>argv</identifier>
+  <symbol> [ </symbol>
+  <integerConstant>1</integerConstant>
+  <symbol> ] </symbol>
+  <identifier>comp_engine</identifier>
+  <symbol> = </symbol>
+  <identifier>CompilationEngine</identifier>
+  <symbol> ( </symbol>
+  <identifier>filename</identifier>
+  <symbol> ) </symbol>
+  <keyword> if </keyword>
+  <identifier>__name__</identifier>
+  <symbol> = </symbol>
+  <symbol> = </symbol>
+  <stringConstant>__main__</stringConstant>
+  <identifier>:</identifier>
+  <identifier>main</identifier>
+  <symbol> ( </symbol>
+  <symbol> ) </symbol>
+</tokens>
