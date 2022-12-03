@@ -3,23 +3,30 @@ import os
 import ntpath
 from xml.dom import minidom
 import xml.etree.cElementTree as ET
-import JackTokenizer
+
+try:
+    import JackTokenizer
+except ImportError:
+    from . import JackTokenizer
 
 import pdb
 
 
 class CompilationEngine:
-    def __init__(self, inFilename):
-        self.tokenizer = JackTokenizer.JackTokenizer(inFilename)
-        self.root = ET.Element("class")
-        self.compile_class()
-        tree = ET.ElementTree(self.root)
-        outFilename = "{}/{}.xml".format(
-            os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
-        )
-        xmlstr = minidom.parseString(ET.tostring(self.root)).toprettyxml(indent="   ")
-        with open(outFilename, "w") as f:
-            f.write(xmlstr)
+    def __init__(self, inFilename=None):
+        if inFilename:
+            self.tokenizer = JackTokenizer.JackTokenizer(inFilename)
+            self.root = ET.Element("class")
+            self.compile_class()
+            tree = ET.ElementTree(self.root)
+            outFilename = "{}/{}.xml".format(
+                os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
+            )
+            xmlstr = minidom.parseString(ET.tostring(self.root)).toprettyxml(
+                indent="   "
+            )
+            with open(outFilename, "w") as f:
+                f.write(xmlstr)
 
     def path_leaf(self, path):
         head, tail = ntpath.split(path)
@@ -31,6 +38,14 @@ class CompilationEngine:
 
     def _write_identifier(self, root):
         ET.SubElement(root, "identifier").text = self.tokenizer.identifier()
+        self.tokenizer.advance()
+
+    def _write_integer_constant(self, root):
+        ET.SubElement(root, "integerConstant").text = self.tokenizer.intVal()
+        self.tokenizer.advance()
+
+    def _write_string_constant(self, root):
+        ET.SubElement(root, "stringConstant").text = self.tokenizer.stringVal()
         self.tokenizer.advance()
 
     def _write_symbol(self, root):
@@ -65,6 +80,10 @@ class CompilationEngine:
 
         self._write_symbol(var_dec)  # ;
 
+    def compile_local_var_dec(self, var_dec):
+        while self.tokenizer.token_matches_value("var"):
+            self.compile_var_dec(var_dec)
+
     def compile_class_var_dec(self):
         var_dec = ET.SubElement(self.root, "classVarDec")
         self.compile_var_dec(var_dec)
@@ -77,20 +96,119 @@ class CompilationEngine:
             if self.tokenizer.symbol() == ",":
                 self._write_symbol(parameterList)
 
+    def compile_term(self, expression):
+        term = ET.SubElement(expression, "term")
+        match self.tokenizer.token_type():
+            case "keyword":
+                if self.tokenizer.keyword() in ["TRUE", "FALSE", "NULL", "THIS"]:
+                    self._write_keyword(term)
+            case "integerConstant":
+                self._write_integer_constant(term)
+            case "stringConstant":
+                self._write_string_constant(term)
+            case "identifier":
+                self._write_identifier(term)
+            # nested expressions
+            case "symbol":
+                if self.tokenizer.token_matches_value("("):
+                    self._write_symbol(term)  # (
+                    self.compile_expression(term)
+                    self._write_symbol(term)  # )
+
+    def compile_expression(self, statement):
+        expression = ET.SubElement(statement, "expression")
+        self.compile_term(expression)
+
+        while self.tokenizer.token_is_operator():
+
+            self._write_symbol(expression)
+            self.compile_term(expression)
+
+    def compile_expression_list(self, root):
+        self._write_symbol(root)  # '('
+
+        expressionList = ET.SubElement(root, "expressionList")
+        # While there are expressions...
+        while not self.tokenizer.token_matches_value(")"):
+            self.compile_expression(expressionList)
+            if self.tokenizer.token_matches_value(","):
+                self._write_symbol(expressionList)
+
+        self._write_symbol(root)  # ')'
+
     def compile_let(self, statements):
-        pass
+        letStatement = ET.SubElement(statements, "letStatement")
+        # "Let":
+        self._write_keyword(letStatement)
+
+        # Variable name:
+        self._write_identifier(letStatement)
+
+        if self.tokenizer.symbol() == "[":
+            self._write_symbol(letStatement)  #'['
+            self.compile_expression(letStatement)  # expr
+            self._write_symbol(letStatement)  #']'
+
+        self._write_symbol(letStatement)  # '='
+
+        self.compile_expression(letStatement)
+        self._write_symbol(letStatement)  #';'
 
     def compile_return(self, statements):
-        pass
+        returnStatement = ET.SubElement(statements, "returnStatement")
+        # "Return"
+        self._write_keyword(returnStatement)
+
+        # if next token is not ; we need to return something
+        if not self.tokenizer.token_matches_value(";"):
+            self.compile_expression(returnStatement)
+
+        # ;
+        self._write_symbol(returnStatement)
 
     def compile_do(self, statements):
-        pass
+        doStatement = ET.SubElement(statements, "doStatement")
+        # do
+        self._write_keyword(doStatement)
+        self._write_identifier(doStatement)  # Subroutine name/(class/var):
+
+        if self.tokenizer.token_matches_value("."):
+            self._write_symbol(doStatement)  # '.'
+            self._write_identifier(doStatement)  # method name
+
+        self.compile_expression_list(doStatement)
+
+        # ;
+        self._write_symbol(doStatement)
 
     def compile_if(self, statements):
-        pass
+        ifStatement = ET.SubElement(statements, "ifStatement")
+        self._write_keyword(ifStatement)  # if
+        self._write_symbol(ifStatement)  # (
+
+        self.compile_expression(ifStatement)  # expressions
+        self._write_symbol(ifStatement)  # )
+
+        self._write_symbol(ifStatement)  # {
+        self.compile_subroutine_statements(ifStatement)
+        self._write_symbol(ifStatement)  # }
+        if self.tokenizer.token_matches_value("else"):
+            self._write_keyword(ifStatement)  # "Else"
+            self._write_symbol(ifStatement)  # '{'
+            self.compile_subroutine_statements(ifStatement)  # (...)
+            self._write_symbol(ifStatement)  # '}'
 
     def compile_while(self, statements):
-        pass
+        whileStatement = ET.SubElement(statements, "whileStatement")
+        self._write_keyword(whileStatement)  # if
+        self._write_symbol(whileStatement)  # (
+
+        self.compile_expression(whileStatement)  # expressions
+        self._write_symbol(whileStatement)  # )
+
+        self._write_symbol(whileStatement)  # {
+        self.compile_subroutine_statements(whileStatement)
+        self._write_symbol(whileStatement)  # }
 
     def compile_subroutine_statements(self, subroutineBody):
         statements = ET.SubElement(subroutineBody, "statements")
@@ -134,7 +252,7 @@ class CompilationEngine:
         # function variable definitions
         if self.tokenizer.keyword() == "VAR":
             var_dec = ET.SubElement(subroutineBody, "varDec")
-            self.compile_var_dec(var_dec)
+            self.compile_local_var_dec(var_dec)
 
         # function statements
         if not self.tokenizer.token_matches_value("}"):
@@ -152,15 +270,16 @@ class CompilationEngine:
             self.compile_class_var_dec()
 
         # Class' subroutines declarations:
-        while self.tokenizer.keyword() in [
-            "CONSTRUCTOR",
-            "FUNCTION",
-            "METHOD",
-            "VOID",
-        ]:
-            self.compile_subroutine()
-
-        self._write_symbol(self.root)  # '}'
+        try:
+            while self.tokenizer.keyword() in [
+                "CONSTRUCTOR",
+                "FUNCTION",
+                "METHOD",
+                "VOID",
+            ]:
+                self.compile_subroutine()
+        except ValueError:
+            self._write_symbol(self.root)  # '}'
 
 
 def main():

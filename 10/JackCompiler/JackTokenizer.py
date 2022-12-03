@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 import pdb
 
 # String constants:
-TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
+# TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
 
 TOKEN_KEYWORDS = [
     "CLASS",
@@ -108,6 +108,19 @@ class JackTokenizer:
             "VOID",
         ]
 
+    def token_is_operator(self):
+        return self.token_type() == "symbol" and self.symbol() in [
+            "+",
+            "-",
+            "*",
+            "/",
+            "&",
+            "|",
+            "<",
+            ">",
+            "=",
+        ]
+
     def check_and_return_value(self, token_type):
         if self.token_type() == token_type:
             if token_type != "stringConstant" and token_type != "identifier":
@@ -118,9 +131,10 @@ class JackTokenizer:
                 return self.get_next_token().text
         else:
             raise ValueError(
-                "Error, element '{}' at position {} is not of type: {}. It's of type: {}".format(
+                "Error, element '{}' with value: '{}' at line {} is not of type: {}. It's of type: {}".format(
+                    self.token_type(),
                     self.get_next_token().text.strip(),
-                    self._cursor,
+                    self._cursor + 2,
                     token_type,
                     self.token_type(),
                 )

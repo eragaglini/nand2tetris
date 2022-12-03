@@ -3,11 +3,13 @@ import pytest
 
 from JackCompiler.JackTokenizer import JackTokenizer
 
+
 @pytest.fixture
 def tokenizer():
     return JackTokenizer(
         "/Users/edoardoragaglini/Desktop/nand2tetris/projects/10/ExpressionLessSquare/Main.jack"
     )
+
 
 def test_split_line(tokenizer):
     assert tokenizer.split_words(
