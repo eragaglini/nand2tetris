@@ -97,6 +97,9 @@ class JackTokenizer:
     def token_type(self):
         return self.get_next_token().tag
 
+    def token_text(self):
+        return self.get_next_token().text.strip().upper()
+
     def token_matches_value(self, value):
         return self.get_next_token().text.strip() == value
 
