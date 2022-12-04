@@ -1,3 +1,4 @@
+# https://medium.com/gousto-engineering-techbrunch/automate-python-code-formatting-with-black-and-pre-commit-ebc69dcc5e03
 repos:
 -   repo: https://github.com/ambv/black
     rev: stable

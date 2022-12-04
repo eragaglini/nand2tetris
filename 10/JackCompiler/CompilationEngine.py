@@ -133,8 +133,9 @@ class CompilationEngine:
 
         self._write_symbol(var_dec)  # ;
 
-    def compile_local_var_dec(self, var_dec):
-        while self.tokenizer.token_matches_value("var"):
+    def compile_local_var_dec(self, root):
+        var_dec = ET.SubElement(root, "varDec")
+        if self.tokenizer.token_matches_value("var"):
             self.compile_var_dec(var_dec)
 
     def compile_class_var_dec(self):
@@ -161,6 +162,19 @@ class CompilationEngine:
                 self._write_string_constant(term)
             case "identifier":
                 self._write_identifier(term)
+
+                # function call in let statement
+                if self.tokenizer.token_matches_value("."):
+                    self._write_symbol(term)  # .
+                    self._write_identifier(term)  # identifier
+                    self.compile_expression_list(term)
+
+                # handling arrays
+                if self.tokenizer.token_matches_value("["):
+                    self._write_symbol(term)  # [
+                    self.compile_expression(term)  # expression
+                    self._write_symbol(term)  # ]
+
             # nested expressions
             case "symbol":
                 if self.tokenizer.token_matches_value("("):
@@ -168,9 +182,28 @@ class CompilationEngine:
                     self.compile_expression(term)
                     self._write_symbol(term)  # )
 
+                # if self.tokenizer.token_matches_value('-'):
+                #    self._write_symbol(term)
+                #    self.compile_term(term)
+
+        if not term:
+            expression.remove(term)
+
     def compile_expression(self, statement):
         expression = ET.SubElement(statement, "expression")
-        self.compile_term(expression)
+        # self.compile_term(expression)
+
+        # handling unary operators
+        if (
+            self.tokenizer.token_matches_value("-")
+            or self.tokenizer.token_matches_value("+")
+            or self.tokenizer.token_matches_value("~")
+        ):
+            term = ET.SubElement(expression, "term")
+            self._write_symbol(term)
+            self.compile_term(term)
+        else:
+            self.compile_term(expression)
 
         while self.tokenizer.token_is_operator():
 
@@ -303,9 +336,8 @@ class CompilationEngine:
         self._write_symbol(subroutineBody)  # '{'
 
         # function variable definitions
-        if self.tokenizer.keyword() == "VAR":
-            var_dec = ET.SubElement(subroutineBody, "varDec")
-            self.compile_local_var_dec(var_dec)
+        while self.tokenizer.keyword() == "VAR":
+            self.compile_local_var_dec(subroutineBody)
 
         # function statements
         if not self.tokenizer.token_matches_value("}"):
