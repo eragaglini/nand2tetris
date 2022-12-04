@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import sys
 import os
-import CompilationEngine
 
-# import JackCompilationEngineXML
+try:
+    from . import CompilationEngine
+except:
+    import CompilationEngine
 
 
 def main():
@@ -15,42 +17,29 @@ def main():
         print("Error:", sys.argv[1], "does not exist.")
         return -1
 
-    xml_output = False
-    # se passiamo l'opzione -xml al programma allora facciamo generare il file xml intermedio
-    if len(sys.argv) > 2 and sys.argv[2] == "-xml":
-        xml_output = True
-
     if os.path.isdir(sys.argv[1]):
         input_path = sys.argv[1]
         print("Input path:", input_path)
-        compileFiles(input_path, xml_output)
+        compile_files(input_path)
     else:
         input_file = sys.argv[1]
-        compileFile(input_file, xml_output)
+        compile_file(input_file, xml_output)
 
 
-def compileFile(input_path, xml_output=False):
-    # JackCompilationEngineXML.JackCompilationEngineXML(input_path, replaceExtension(input_path, ".xml"))
-    # in teoria ci sono due versioni del Compilation Engine, una per generare un file xml intermedio e un'altra
-    # per la gestione del file xml intermedio
-    if xml_output:
-        print(input_path, "- Generating XML", "...")
-        CompilationEngine.CompilationEngine(
-            input_path, replaceExtension(input_path, ".xml")
-        )
-    else:
-        print(input_path, "- Compiling", "...")
-        # JackCompilationEngine.JackCompilationEngine(input_path, replaceExtension(input_path, ".vm"))
+def compile_file(input_path):
+    CompilationEngine.CompilationEngine(
+        input_path,
+    )
 
 
-def compileFiles(directory, xml_output):
+def compile_files(directory):
     """Get all files in directory that are not .XMLs and compile them."""
     for f in os.listdir(directory):
         if f.find("jack") != -1:
-            compileFile(directory + f, xml_output)
+            compile_file(directory + "/" + f)
 
 
-def replaceExtension(input_name, extension):
+def replace_extension(input_name, extension):
     return input_name.replace(".jack", extension)
 
 
