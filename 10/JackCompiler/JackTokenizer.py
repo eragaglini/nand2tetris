@@ -1,11 +1,9 @@
 import sys
 import re
 import ntpath
-from dict2xml import dict2xml
 import xml.etree.ElementTree as ET
-from xml.dom import minidom
+import utils
 
-import pdb
 
 # String constants:
 # TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]
@@ -71,50 +69,7 @@ class JackTokenizer:
 
         if xml_output:
             file_name = "{}T.xml".format(self.path_leaf(path).rsplit(".", 1)[0])
-            t = minidom.parseString(ET.tostring(self._root))
-
-            def patcher(method):
-                def patching(self, *args, **kwargs):
-                    old = self.childNodes
-                    try:
-                        if not self.childNodes:
-
-                            class Dummy(list):
-                                def __nonzero__(self):  # Python2
-                                    return True
-
-                                def __bool__(self):  # Python3
-                                    return True
-
-                            old, self.childNodes = self.childNodes, Dummy([])
-                        return method(self, *args, **kwargs)
-                    finally:
-                        self.childNodes = old
-
-                return patching
-
-            t.firstChild.__class__.writexml = patcher(t.firstChild.__class__.writexml)
-            # childNodes[0] to omit the xml declaration
-            xmlstr = t.childNodes[0].toprettyxml(indent="   ")
-
-            with open(file_name, "w") as f:
-                f.write(xmlstr)
-
-            # replace ampersand characters:
-            # read input file
-            with open(file_name, "rt") as fin:
-                # read file contents to string
-                data = fin.read()
-                # replace all occurrences of the required string
-                data = (
-                    data.replace("&amp;lt;", "&lt;")
-                    .replace("&amp;amp;", "&amp;")
-                    .replace("&amp;gt;", "&gt;")
-                )
-            # open the input file in write mode
-            with open(file_name, "wt") as fin:
-                # overrite the input file with the resulting data
-                fin.write(data)
+            utils.generate_xml_file(self._root, file_name)
         self._cursor = 0
 
     def advance(self):
