@@ -60,7 +60,7 @@ WHITE_SPACE = [" ", "\n", "\t"]
 
 
 class JackTokenizer:
-    def __init__(self, path) -> None:
+    def __init__(self, path, xml_output=False) -> None:
         self.token_lst, self.token_dicts = self.get_token_lst_and_dict(path)
         self._root = ET.Element("tokens")
         for token_dict in self.token_dicts:
@@ -69,51 +69,52 @@ class JackTokenizer:
                 el = ET.SubElement(self._root, k)
                 el.text = val
 
-        file_name = "{}T.xml".format(self.path_leaf(path).rsplit(".", 1)[0])
-        t = minidom.parseString(ET.tostring(self._root))
+        if xml_output:
+            file_name = "{}T.xml".format(self.path_leaf(path).rsplit(".", 1)[0])
+            t = minidom.parseString(ET.tostring(self._root))
 
-        def patcher(method):
-            def patching(self, *args, **kwargs):
-                old = self.childNodes
-                try:
-                    if not self.childNodes:
+            def patcher(method):
+                def patching(self, *args, **kwargs):
+                    old = self.childNodes
+                    try:
+                        if not self.childNodes:
 
-                        class Dummy(list):
-                            def __nonzero__(self):  # Python2
-                                return True
+                            class Dummy(list):
+                                def __nonzero__(self):  # Python2
+                                    return True
 
-                            def __bool__(self):  # Python3
-                                return True
+                                def __bool__(self):  # Python3
+                                    return True
 
-                        old, self.childNodes = self.childNodes, Dummy([])
-                    return method(self, *args, **kwargs)
-                finally:
-                    self.childNodes = old
+                            old, self.childNodes = self.childNodes, Dummy([])
+                        return method(self, *args, **kwargs)
+                    finally:
+                        self.childNodes = old
 
-            return patching
+                return patching
 
-        t.firstChild.__class__.writexml = patcher(t.firstChild.__class__.writexml)
-        # childNodes[0] to omit the xml declaration
-        xmlstr = t.childNodes[0].toprettyxml(indent="   ")
+            t.firstChild.__class__.writexml = patcher(t.firstChild.__class__.writexml)
+            # childNodes[0] to omit the xml declaration
+            xmlstr = t.childNodes[0].toprettyxml(indent="   ")
 
-        with open(file_name, "w") as f:
-            f.write(xmlstr)
+            with open(file_name, "w") as f:
+                f.write(xmlstr)
 
-        # replace ampersand characters:
-        # read input file
-        with open(file_name, "rt") as fin:
-            # read file contents to string
-            data = fin.read()
-            # replace all occurrences of the required string
-            data = (
-                data.replace("&amp;lt;", "&lt;")
-                .replace("&amp;amp;", "&amp;")
-                .replace("&amp;gt;", "&gt;")
-            )
-        # open the input file in write mode
-        with open(file_name, "wt") as fin:
-            # overrite the input file with the resulting data
-            fin.write(data)
+            # replace ampersand characters:
+            # read input file
+            with open(file_name, "rt") as fin:
+                # read file contents to string
+                data = fin.read()
+                # replace all occurrences of the required string
+                data = (
+                    data.replace("&amp;lt;", "&lt;")
+                    .replace("&amp;amp;", "&amp;")
+                    .replace("&amp;gt;", "&gt;")
+                )
+            # open the input file in write mode
+            with open(file_name, "wt") as fin:
+                # overrite the input file with the resulting data
+                fin.write(data)
         self._cursor = 0
 
     def advance(self):
