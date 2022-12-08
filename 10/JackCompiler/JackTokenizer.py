@@ -3,6 +3,7 @@ import re
 import ntpath
 from dict2xml import dict2xml
 import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 import pdb
 
@@ -61,28 +62,58 @@ WHITE_SPACE = [" ", "\n", "\t"]
 class JackTokenizer:
     def __init__(self, path) -> None:
         self.token_lst, self.token_dicts = self.get_token_lst_and_dict(path)
-
-        xml_title = "tokens"
-        xml_tag_pattern = re.compile(r"</?{}>".format(xml_title))
-        inner_xml = re.sub(
-            xml_tag_pattern,
-            "",
-            "".join(dict2xml(e, wrap="tokens") for e in self.token_dicts),
-        )
+        self._root = ET.Element("tokens")
+        for token_dict in self.token_dicts:
+            # for loop for getting first key
+            for k, val in token_dict.items():
+                el = ET.SubElement(self._root, k)
+                el.text = val
 
         file_name = "{}T.xml".format(self.path_leaf(path).rsplit(".", 1)[0])
+        t = minidom.parseString(ET.tostring(self._root))
+
+        def patcher(method):
+            def patching(self, *args, **kwargs):
+                old = self.childNodes
+                try:
+                    if not self.childNodes:
+
+                        class Dummy(list):
+                            def __nonzero__(self):  # Python2
+                                return True
+
+                            def __bool__(self):  # Python3
+                                return True
+
+                        old, self.childNodes = self.childNodes, Dummy([])
+                    return method(self, *args, **kwargs)
+                finally:
+                    self.childNodes = old
+
+            return patching
+
+        t.firstChild.__class__.writexml = patcher(t.firstChild.__class__.writexml)
+        # childNodes[0] to omit the xml declaration
+        xmlstr = t.childNodes[0].toprettyxml(indent="   ")
+
         with open(file_name, "w") as f:
-            f.write("<{0}>{1}</{0}>".format(xml_title, inner_xml))
+            f.write(xmlstr)
 
-        with open(file_name) as xmlfile:
-            lines = [line for line in xmlfile if line.strip() != ""]
-
-        with open((file_name), "w") as xmlfile:
-            xmlfile.writelines(lines)
-
-        self._filename = file_name
-        tree = ET.parse(self._filename)
-        self._root = tree.getroot()
+        # replace ampersand characters:
+        # read input file
+        with open(file_name, "rt") as fin:
+            # read file contents to string
+            data = fin.read()
+            # replace all occurrences of the required string
+            data = (
+                data.replace("&amp;lt;", "&lt;")
+                .replace("&amp;amp;", "&amp;")
+                .replace("&amp;gt;", "&gt;")
+            )
+        # open the input file in write mode
+        with open(file_name, "wt") as fin:
+            # overrite the input file with the resulting data
+            fin.write(data)
         self._cursor = 0
 
     def advance(self):

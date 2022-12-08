@@ -18,7 +18,6 @@ class CompilationEngine:
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename)
             self.root = ET.Element("class")
             self.compile_class()
-            tree = ET.ElementTree(self.root)
             outFilename = "{}/{}.xml".format(
                 os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
             )

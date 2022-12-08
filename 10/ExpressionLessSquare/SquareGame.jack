@@ -37,6 +37,25 @@ class SquareGame {
         return;
     }
 
+    // Moves the square by 2 in the current direction.
+    method void moveSquare() {
+        if (direction) {
+            do square.moveUp();
+        }
+        if (direction) {
+            do square.moveDown();
+        }
+        if (direction) {
+            do square.moveLeft();
+        }
+        if (direction) {
+            do square.moveRight();
+        }
+
+        do Sys.wait(direction); // Delays the next movement.
+        return;
+    }
+
     // Starts the game. Handles inputs from the user that controls
     // the square movement direction and size.
     method void run() {
@@ -81,25 +100,6 @@ class SquareGame {
             }
         }
             
-        return;
-    }
-
-    // Moves the square by 2 in the current direction.
-    method void moveSquare() {
-        if (direction) {
-            do square.moveUp();
-        }
-        if (direction) {
-            do square.moveDown();
-        }
-        if (direction) {
-            do square.moveLeft();
-        }
-        if (direction) {
-            do square.moveRight();
-        }
-
-        do Sys.wait(direction); // Delays the next movement.
         return;
     }
 }

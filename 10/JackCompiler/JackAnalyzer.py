@@ -23,7 +23,7 @@ def main():
         compile_files(input_path)
     else:
         input_file = sys.argv[1]
-        compile_file(input_file, xml_output)
+        compile_file(input_file)
 
 
 def compile_file(input_path):
