@@ -5,15 +5,18 @@ import xml.etree.cElementTree as ET
 
 try:
     import JackTokenizer
+    import SymbolTable
     import utils
 except ImportError:
     from . import JackTokenizer
+    from . import SymbolTable
     from . import utils
 
 
 class CompilationEngine:
     def __init__(self, inFilename=None, xml_output=False):
         if inFilename:
+            self.symbol_table = SymbolTable.SymbolTable()
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename, xml_output)
             self.root = ET.Element("class")
             self.compile_class()
@@ -64,26 +67,23 @@ class CompilationEngine:
         else:
             self._write_identifier(root)
 
-    def compile_var_dec(self, var_dec):
-        self._write_keyword(var_dec)  # field or static or var
-        self._write_type(var_dec)  # type of variable
-        self._write_identifier(var_dec)  # identifier of variable
+    def compile_var_dec(self):
+        keyword = self._get_keyword()  # field or static or var
+        type = self._get_type()  # type of variable
+        name = self._get_identifier()  # identifier of variable
+        self._define_var(name, type, keyword)
 
         # Are there more variables in the same line?
         while self.tokenizer.symbol() == ",":
-            self._write_symbol(var_dec)
-            self._write_identifier(var_dec)  # Var. name
+            self._get_symbol()
+            name = self._get_identifier()  # Var. name
+            self._define_var(name, type, keyword)
 
-        self._write_symbol(var_dec)  # ;
+        self._get_symbol()  # ;
 
     def compile_local_var_dec(self, root):
-        var_dec = ET.SubElement(root, "varDec")
         if self.tokenizer.token_matches_value("var"):
-            self.compile_var_dec(var_dec)
-
-    def compile_class_var_dec(self):
-        var_dec = ET.SubElement(self.root, "classVarDec")
-        self.compile_var_dec(var_dec)
+            self.compile_var_dec()
 
     def compile_parameter_list(self, parameterList):
         while not self.tokenizer.token_matches_value(")"):
@@ -289,14 +289,15 @@ class CompilationEngine:
         self._write_symbol(subroutineBody)  # '}' (end of subroutine body.)
 
     def compile_class(self):
-        self._write_keyword(self.root)  # "Class"
-        self._write_identifier(self.root)  #  className
-        self._write_symbol(self.root)  # '{'
+        self._get_keyword()  # "Class"
+        self._class_name = self._get_identifier()  #  className
+        self._get_symbol()  # '{'
 
         # Variable declarations:
         while self.tokenizer.keyword() in ["STATIC", "FIELD"]:
-            self.compile_class_var_dec()
+            self.compile_var_dec()
 
+        return
         # Class' subroutines declarations:
         while self.tokenizer.token_text() in [
             "CONSTRUCTOR",
@@ -306,6 +307,32 @@ class CompilationEngine:
         ]:
             self.compile_subroutine()
         self._write_symbol(self.root)  # '}'
+
+    # --- PRIVATE functions --- #
+    def _get_keyword(self):
+        keyword = self.tokenizer.keyword()
+        self.tokenizer.advance()
+        return keyword
+
+    def _get_identifier(self):
+        identifier = self.tokenizer.identifier()
+        self.tokenizer.advance()
+        return identifier
+
+    def _get_symbol(self):
+        symbol = self.tokenizer.symbol()
+        self.tokenizer.advance()
+        return symbol
+
+    def _get_type(self):
+        if self.tokenizer.token_is_primitive_type():
+            return self._get_keyword()
+        else:
+            return self._get_identifier()
+
+    def _define_var(self, name, varType, kind):
+        if not self.symbol_table.kind_of(name):
+            self.symbol_table.define(name, varType, kind)
 
 
 def main():

@@ -15,7 +15,7 @@ class SymbolTable:
         self._local_arg_index = 0
         self._local_var_index = 0
 
-    def define(name: str, type: str, kind: str):
+    def define(self, name: str, type: str, kind: str):
         """
         adds a new variable to the symbol table with
         the given name, type and kind. Assigns to it the index value
@@ -30,7 +30,19 @@ class SymbolTable:
             kind: str
                 STATIC, FIELD, ARG o VAR
         """
-        pass
+        kind = kind.upper()
+        if kind == "STATIC":
+            self._global[name] = (type, kind, self._global_static_index)
+            self._global_static_index += 1
+        elif kind == "FIELD":
+            self._global[name] = (type, kind, self._global_field_index)
+            self._global_field_index += 1
+        elif kind == "ARG":
+            self._local[name] = (type, kind, self._local_arg_index)
+            self._local_arg_index += 1
+        elif kind == "LOCAL":
+            self._local[name] = (type, kind, self._local_var_index)
+            self._local_var_index += 1
 
     def var_count(self, kind):
         """
@@ -67,11 +79,9 @@ class SymbolTable:
         Returns:
             str: the kind of the named identifier in the current scope
         """
-        if name in self._local:
-            return self._local[name][1]
-        if name in self._global:
-            return self._global[name][1]
-        return "NONE"
+        return (
+            self._local.get(name) if self._local.get(name) else self._global.get(name)
+        )
 
     def index_of(self, name):
         """
