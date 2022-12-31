@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class CommandType(Enum):
     C_PUSH = 1
     C_POP = 2

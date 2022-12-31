@@ -13,17 +13,16 @@ def main():
     else:
         print("File non esistente!")
         return
-    
+
     lines = parse_lines(sys.argv[1])
     lines = update_symbol_table(lines)
-    
-        
+
     if not os.path.exists("./bin"):
         os.mkdir("./bin")
-    with open("./bin/{}.hack".format(file_name), 'w') as file:
+    with open("./bin/{}.hack".format(file_name), "w") as file:
         for line in lines:
             # to print all the (relevant) lines in the file:
-            file.write(process_line(line) + '\n')
+            file.write(process_line(line) + "\n")
 
 
 if __name__ == "__main__":

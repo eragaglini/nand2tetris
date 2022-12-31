@@ -3,8 +3,8 @@ import pytest
 
 from JackCompiler import CompilationEngine
 
-
-def test_symbol_table():
+"""
+def test_symbol_table_global():
     compilation_engine = CompilationEngine.CompilationEngine(
         "Pong/Ball.jack",
     )
@@ -48,3 +48,11 @@ def test_symbol_table():
         "lastWall": ("INT", "FIELD", 5),
         "batWidth": ("INT", "FIELD", 6),
     }
+"""
+
+
+def test_symbol_table_local():
+    compilation_engine = CompilationEngine.CompilationEngine(
+        "Pong/PongGame.jack",
+    )
+    assert 1 == 1

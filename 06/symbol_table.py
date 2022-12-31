@@ -1,4 +1,3 @@
-
 # these three dictionaries store the translations of the 3 parts
 # of a c-instruction
 comp = {
@@ -29,8 +28,8 @@ comp = {
     "D-M": "1010011",
     "M-D": "1000111",
     "D&M": "1000000",
-    "D|M": "1010101"
-    }
+    "D|M": "1010101",
+}
 
 
 dest = {
@@ -41,8 +40,8 @@ dest = {
     "MD": "011",
     "AM": "101",
     "AD": "110",
-    "AMD": "111"
-    }
+    "AMD": "111",
+}
 
 
 jump = {
@@ -53,8 +52,8 @@ jump = {
     "JLT": "100",
     "JNE": "101",
     "JLE": "110",
-    "JMP": "111"
-    }
+    "JMP": "111",
+}
 
 
 # table of symbols used in assembly code, initialized to include
@@ -67,17 +66,17 @@ table = {
     "THAT": 4,
     "SCREEN": 16384,
     "KBD": 24576,
-    }
+}
 
 
 def update_symbol_table(lines):
 
     # update table with first 15 registers
-    for i in range(0,16):
+    for i in range(0, 16):
         label = "R" + str(i)
         table[label] = i
-        
-    variableCursor = 16 
+
+    variableCursor = 16
     updated_lines = []
     lineNumber = 0
     for line in lines:

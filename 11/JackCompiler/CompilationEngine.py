@@ -2,12 +2,15 @@ import sys
 import os
 import ntpath
 import xml.etree.cElementTree as ET
+import pdb
 
 try:
+    import VMWriter
     import JackTokenizer
     import SymbolTable
     import utils
 except ImportError:
+    from . import VMWriter
     from . import JackTokenizer
     from . import SymbolTable
     from . import utils
@@ -16,6 +19,10 @@ except ImportError:
 class CompilationEngine:
     def __init__(self, inFilename=None, xml_output=False):
         if inFilename:
+            vmFilename = "{}/{}.vm".format(
+                os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
+            )
+            self.vm_writer = VMWriter.VMWriter(vmFilename)
             self.symbol_table = SymbolTable.SymbolTable()
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename, xml_output)
             self.root = ET.Element("class")
@@ -68,30 +75,32 @@ class CompilationEngine:
             self._write_identifier(root)
 
     def compile_var_dec(self):
+        nLocals = 0
         keyword = self._get_keyword()  # field or static or var
         type = self._get_type()  # type of variable
         name = self._get_identifier()  # identifier of variable
         self._define_var(name, type, keyword)
+        nLocals += 1
 
         # Are there more variables in the same line?
         while self.tokenizer.symbol() == ",":
             self._get_symbol()
             name = self._get_identifier()  # Var. name
             self._define_var(name, type, keyword)
+            nLocals += 1
 
         self._get_symbol()  # ;
+        return nLocals
 
-    def compile_local_var_dec(self, root):
-        if self.tokenizer.token_matches_value("var"):
-            self.compile_var_dec()
-
-    def compile_parameter_list(self, parameterList):
+    def compile_parameter_list(self):
+        kind = "ARG"
         while not self.tokenizer.token_matches_value(")"):
-            self._write_keyword(parameterList)  # Type
-            self._write_identifier(parameterList)  # Name
+            type = self._get_keyword()  # Type
+            name = self._get_identifier()  # Name
+            self._define_var(name, type, kind)
             # More parameters?
             if self.tokenizer.symbol() == ",":
-                self._write_symbol(parameterList)
+                self._get_symbol()  # ,
 
     def compile_term(self, expression):
         term = ET.SubElement(expression, "term")
@@ -260,33 +269,38 @@ class CompilationEngine:
                 self.compile_while(statements)
 
     def compile_subroutine(self):
-        subroutineDec = ET.SubElement(self.root, "subroutineDec")
         # function signature
-        self._write_keyword(subroutineDec)  # constructor, method of function
-        self._write_type(subroutineDec)  # Return type
-        self._write_identifier(subroutineDec)  # subroutine identifier
-        self._write_symbol(subroutineDec)  # '('
+        self._get_keyword()  # constructor, method of function
+        self._get_type()  # Return type
+        subroutine_name = self._get_identifier()  # subroutine identifier
+        self._get_symbol()  # '('
 
         # parameter list
-        parameterList = ET.SubElement(subroutineDec, "parameterList")
-        self.compile_parameter_list(parameterList)
+        self.compile_parameter_list()
 
-        self._write_symbol(subroutineDec)  # ')'
+        self._get_symbol()  # ')'
+        self._get_symbol()  # '{'
+
+        print("compiling: {}.{}".format(self._class_name, subroutine_name))
+
+        nLocals = 0
+        # function variable definitions
+        while self.tokenizer.keyword() == "VAR":
+            nLocals += self.compile_var_dec()
+
+        # writing subroutine signature
+        # declaring a function that has nLocals local variables
+        self.vm_writer.write_function_signature(
+            "{}.{}".format(self._class_name, subroutine_name), nLocals
+        )
 
         # function body can be comprised of variable declaration and statements
         # Body:
-        subroutineBody = ET.SubElement(subroutineDec, "subroutineBody")
-        self._write_symbol(subroutineBody)  # '{'
-
-        # function variable definitions
-        while self.tokenizer.keyword() == "VAR":
-            self.compile_local_var_dec(subroutineBody)
-
         # function statements
         if not self.tokenizer.token_matches_value("}"):
-            self.compile_subroutine_statements(subroutineBody)
+            self.compile_subroutine_statements()
 
-        self._write_symbol(subroutineBody)  # '}' (end of subroutine body.)
+        self._get_symbol()  # '}' (end of subroutine body.)
 
     def compile_class(self):
         self._get_keyword()  # "Class"
@@ -297,7 +311,6 @@ class CompilationEngine:
         while self.tokenizer.keyword() in ["STATIC", "FIELD"]:
             self.compile_var_dec()
 
-        return
         # Class' subroutines declarations:
         while self.tokenizer.token_text() in [
             "CONSTRUCTOR",
