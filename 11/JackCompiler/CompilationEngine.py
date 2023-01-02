@@ -23,11 +23,11 @@ class CompilationEngine:
             self.vm_writer = VMWriter.VMWriter(vmFilename)
             self.symbol_table = SymbolTable.SymbolTable()
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename, xml_output)
-            self.compile_class()
             # Initializing context variables:
             self._label_index = 0
             self._if_index = 0
             self._while_index = 0
+            self.compile_class()
             if xml_output:
                 outFilename = "{}/{}.xml".format(
                     os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
@@ -83,8 +83,7 @@ class CompilationEngine:
             case "integerConstant":
                 self.vm_writer.write_push("constant", self._get_int_val())
             case "stringConstant":
-                string_val = self.tokenizer.string_val()
-                self.vm_writer.write_string(string_val)
+                self.vm_writer.write_string(self._get_string_val())
             case "identifier":
                 var_name = self._get_identifier()
                 # if it's a variable, it should push its value
