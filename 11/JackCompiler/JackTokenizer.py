@@ -139,10 +139,10 @@ class JackTokenizer:
     def keyword(self):
         return self.check_and_return_value("keyword")
 
-    def intVal(self):
+    def int_val(self):
         return self.check_and_return_value("integerConstant")
 
-    def stringVal(self):
+    def string_val(self):
         return self.check_and_return_value("stringConstant")
 
     def identifier(self):

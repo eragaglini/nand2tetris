@@ -19,9 +19,7 @@ except ImportError:
 class CompilationEngine:
     def __init__(self, inFilename=None, xml_output=False):
         if inFilename:
-            vmFilename = "{}/{}.vm".format(
-                os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
-            )
+            vmFilename = os.path.splitext(inFilename)[0] + ".vm"
             self.vm_writer = VMWriter.VMWriter(vmFilename)
             self.symbol_table = SymbolTable.SymbolTable()
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename, xml_output)
@@ -37,42 +35,6 @@ class CompilationEngine:
     def path_leaf(self, path):
         head, tail = ntpath.split(path)
         return tail or ntpath.basename(head)
-
-    def _write_keyword(self, root):
-        ET.SubElement(root, "keyword").text = self.tokenizer.keyword().lower()
-        self.tokenizer.advance()
-
-    def _write_identifier(self, root):
-        ET.SubElement(root, "identifier").text = self.tokenizer.identifier()
-        self.tokenizer.advance()
-
-    def _write_integer_constant(self, root):
-        ET.SubElement(root, "integerConstant").text = self.tokenizer.intVal()
-        self.tokenizer.advance()
-
-    def _write_string_constant(self, root):
-        ET.SubElement(root, "stringConstant").text = self.tokenizer.stringVal()
-        self.tokenizer.advance()
-
-    def _write_symbol(self, root):
-        symbol = self.tokenizer.symbol()
-        if symbol == '"':
-            symbol = "&quot;"
-        if symbol == "&":
-            symbol = "&amp;"
-        elif symbol == "<":
-            symbol = "&lt;"
-        elif symbol == ">":
-            symbol = "&gt;"
-
-        ET.SubElement(root, "symbol").text = symbol
-        self.tokenizer.advance()
-
-    def _write_type(self, root):
-        if self.tokenizer.token_is_primitive_type():
-            self._write_keyword(root)
-        else:
-            self._write_identifier(root)
 
     def compile_var_dec(self):
         nLocals = 0
@@ -102,142 +64,158 @@ class CompilationEngine:
             if self.tokenizer.symbol() == ",":
                 self._get_symbol()  # ,
 
-    def compile_term(self, expression):
-        term = ET.SubElement(expression, "term")
+    def compile_term(self):
         match self.tokenizer.token_type():
             case "keyword":
                 if self.tokenizer.keyword() in ["TRUE", "FALSE", "NULL", "THIS"]:
-                    self._write_keyword(term)
+                    kw = self._get_keyword()
+                    if kw == "FALSE" or kw == "NULL":
+                        self.vm_writer.write_push("constant", 0)
+                    elif kw == "TRUE":
+                        # -1 in two's complement.
+                        self.vm_writer.write_push("constant", 0)
+                        self.vm_writer.write_arithmetic("~")
+                    elif kw == "THIS":
+                        self.vm_writer.write_push("pointer", 0)
+
             case "integerConstant":
-                self._write_integer_constant(term)
+                self.vm_writer.write_push("constant", self._get_int_val())
             case "stringConstant":
-                self._write_string_constant(term)
+                string_val = self.tokenizer.string_val()
+                self.vm_writer.write_string(string_val)
             case "identifier":
-                self._write_identifier(term)
+                var_name = self._get_identifier()
+                # if it's a variable, it should push its value
+                # otherwise it won't do anything
+                self._write_var_push(var_name)
 
-                # function call in let statement
-                if self.tokenizer.token_matches_value("."):
-                    self._write_symbol(term)  # .
-                    self._write_identifier(term)  # identifier
-                    self.compile_expression_list(term)
+                # Is it an array?
+                if self.tokenizer.token_matches_value("["):  # '[' expression']'
+                    self._get_symbol()  # '['
+                    self.vm_writer.write_push(
+                        "POINTER", 1
+                    )  # Save the current THAT pointer
+                    self.vm_writer.write_pop("TEMP", 0)  # into TEMP0.
+                    # compile expression to get the index of the array
+                    self.compile_expression()
+                    # Adding the expression to the previously loaded base pointer:
+                    self.vm_writer.write_arithmetic("+")
+                    # pop resulting address to pointer 1
+                    self.vm_writer.write_pop("POINTER", 1)
+                    self.vm_writer.write_push("THAT", 0)  # Deferefencing into TEMP1.
+                    self.vm_writer.write_pop("TEMP", 1)
+                    # Re-establish THAT pointer.
+                    self.vm_writer.write_push("TEMP", 0)
+                    self.vm_writer.write_pop("POINTER", 1)
 
-                # handling arrays
-                if self.tokenizer.token_matches_value("["):
-                    self._write_symbol(term)  # [
-                    self.compile_expression(term)  # expression
-                    self._write_symbol(term)  # ]
+                    self.vm_writer.write_push("TEMP", 1)  # Push result.
+                    self._get_symbol()  # ']'
+
+                # Is it a subroutine call?
+                elif self.tokenizer.token_matches_value("("):  # '(' expression ')'
+                    self._write_subroutine_call(var_name)
+                # Is it a method call?
+                elif self.tokenizer.token_matches_value("."):
+                    self._write_subroutine_call(var_name)
 
             # nested expressions
             case "symbol":
                 if self.tokenizer.token_matches_value("("):
-                    self._write_symbol(term)  # (
-                    self.compile_expression(term)
-                    self._write_symbol(term)  # )
+                    self._get_symbol()  # (
+                    self.compile_expression()
+                    self._get_symbol()  # )
 
-                # if self.tokenizer.token_matches_value('-'):
-                #    self._write_symbol(term)
-                #    self.compile_term(term)
-
-        if not term:
-            expression.remove(term)
-
-    def compile_expression(self, statement):
-        expression = ET.SubElement(statement, "expression")
-        # self.compile_term(expression)
-
+    def compile_expression(self):
         # handling unary operators
-        if (
-            self.tokenizer.token_matches_value("-")
-            or self.tokenizer.token_matches_value("+")
-            or self.tokenizer.token_matches_value("~")
-        ):
-            term = ET.SubElement(expression, "term")
-            self._write_symbol(term)
-            self.compile_term(term)
+        if self.tokenizer.token_matches_value(
+            "-"
+        ) or self.tokenizer.token_matches_value("~"):
+            self._get_symbol()
+            self.compile_term()
         else:
-            self.compile_term(expression)
+            self.compile_term()
 
         while self.tokenizer.token_is_operator():
+            command = self._get_symbol()
+            self.compile_term()
+            self.vm_writer.write_arithmetic(command)
 
-            self._write_symbol(expression)
-            self.compile_term(expression)
+    def compile_expression_list(self):
+        num = 0
+        self._get_symbol()  # '('
 
-    def compile_expression_list(self, root):
-        self._write_symbol(root)  # '('
-
-        expressionList = ET.SubElement(root, "expressionList")
         # While there are expressions...
         while not self.tokenizer.token_matches_value(")"):
-            self.compile_expression(expressionList)
+            self.compile_expression()
+            num += 1
             if self.tokenizer.token_matches_value(","):
-                self._write_symbol(expressionList)
+                self._get_symbol()
 
-        self._write_symbol(root)  # ')'
+        self._get_symbol()  # ')'
+        return num
 
-    def compile_let(self, statements):
-        letStatement = ET.SubElement(statements, "letStatement")
+    def compile_let(self):
         # "Let":
-        self._write_keyword(letStatement)
+        self._get_keyword()
 
         # Variable name:
-        self._write_identifier(letStatement)
+        var_name = self._get_identifier()
 
+        array = False
         if self.tokenizer.symbol() == "[":
-            self._write_symbol(letStatement)  #'['
-            self.compile_expression(letStatement)  # expr
-            self._write_symbol(letStatement)  #']'
+            array = True
+            self._write_var_push(var_name)
+            self._get_symbol()  #'['
+            self.compile_expression()  # expr
+            self._get_symbol()  #']'
+            self.vm_writer.write_arithmetic("+")
+            self.vm_writer.write_pop("POINTER", 1)  # Push to the THAT pointer.
 
-        self._write_symbol(letStatement)  # '='
+        self._get_symbol()  # '='
+        self.compile_expression()
 
-        self.compile_expression(letStatement)
-        self._write_symbol(letStatement)  #';'
+        if array:
+            self.vm_writer.write_pop("THAT", 0)
+        else:
+            self._write_var_push(var_name)
 
-    def compile_return(self, statements):
-        returnStatement = ET.SubElement(statements, "returnStatement")
+        self._get_symbol()  #';'
+
+    def compile_return(self):
         # "Return"
-        self._write_keyword(returnStatement)
+        self._get_keyword()
 
         # if next token is not ; we need to return something
         if not self.tokenizer.token_matches_value(";"):
-            self.compile_expression(returnStatement)
+            self.compile_expression()
 
         # ;
-        self._write_symbol(returnStatement)
+        self._get_symbol()
 
-    def compile_do(self, statements):
-        doStatement = ET.SubElement(statements, "doStatement")
-        # do
-        self._write_keyword(doStatement)
-        self._write_identifier(doStatement)  # Subroutine name/(class/var):
+    def compile_do(self):
+        self._get_keyword()
+        subroutine_name = self._get_identifier()  # Subroutine name/(class/var)
+        self._write_subroutine_call(subroutine_name)
+        self._get_symbol()  # ;
 
-        if self.tokenizer.token_matches_value("."):
-            self._write_symbol(doStatement)  # '.'
-            self._write_identifier(doStatement)  # method name
+    """
+    def compile_if(self):
+        self._write_keyword()  # if
+        self._write_symbol()  # (
 
-        self.compile_expression_list(doStatement)
+        self.compile_expression()  # expressions
+        self._write_symbol()  # )
 
-        # ;
-        self._write_symbol(doStatement)
-
-    def compile_if(self, statements):
-        ifStatement = ET.SubElement(statements, "ifStatement")
-        self._write_keyword(ifStatement)  # if
-        self._write_symbol(ifStatement)  # (
-
-        self.compile_expression(ifStatement)  # expressions
-        self._write_symbol(ifStatement)  # )
-
-        self._write_symbol(ifStatement)  # {
-        self.compile_subroutine_statements(ifStatement)
-        self._write_symbol(ifStatement)  # }
+        self._write_symbol()  # {
+        self.compile_subroutine_statements()
+        self._write_symbol()  # }
         if self.tokenizer.token_matches_value("else"):
-            self._write_keyword(ifStatement)  # "Else"
-            self._write_symbol(ifStatement)  # '{'
-            self.compile_subroutine_statements(ifStatement)  # (...)
-            self._write_symbol(ifStatement)  # '}'
+            self._write_keyword()  # "Else"
+            self._write_symbol()  # '{'
+            self.compile_subroutine_statements()  # (...)
+            self._write_symbol()  # '}'
 
     def compile_while(self, statements):
-        whileStatement = ET.SubElement(statements, "whileStatement")
         self._write_keyword(whileStatement)  # if
         self._write_symbol(whileStatement)  # (
 
@@ -247,26 +225,26 @@ class CompilationEngine:
         self._write_symbol(whileStatement)  # {
         self.compile_subroutine_statements(whileStatement)
         self._write_symbol(whileStatement)  # }
+    """
 
-    def compile_subroutine_statements(self, subroutineBody):
-        statements = ET.SubElement(subroutineBody, "statements")
+    def compile_subroutine_statements(self):
         # subroutine body can have differents kinds of statements:
         while not self.tokenizer.token_matches_value("}"):
             # let statements
             if self.tokenizer.keyword() == "LET":
-                self.compile_let(statements)
+                self.compile_let()
             # return statements
             elif self.tokenizer.keyword() == "RETURN":
-                self.compile_return(statements)
+                self.compile_return()
             # do statements
             elif self.tokenizer.keyword() == "DO":
-                self.compile_do(statements)
+                self.compile_do()
             # if statements
             elif self.tokenizer.keyword() == "IF":
-                self.compile_if(statements)
+                self.compile_if()
             # while statements
             elif self.tokenizer.keyword() == "WHILE":
-                self.compile_while(statements)
+                self.compile_while()
 
     def compile_subroutine(self):
         # function signature
@@ -280,8 +258,6 @@ class CompilationEngine:
 
         self._get_symbol()  # ')'
         self._get_symbol()  # '{'
-
-        print("compiling: {}.{}".format(self._class_name, subroutine_name))
 
         nLocals = 0
         # function variable definitions
@@ -319,7 +295,7 @@ class CompilationEngine:
             "VOID",
         ]:
             self.compile_subroutine()
-        self._write_symbol(self.root)  # '}'
+        self._get_symbol()  # '}'
 
     # --- PRIVATE functions --- #
     def _get_keyword(self):
@@ -337,6 +313,16 @@ class CompilationEngine:
         self.tokenizer.advance()
         return symbol
 
+    def _get_int_val(self):
+        int_val = self.tokenizer.int_val()
+        self.tokenizer.advance()
+        return int_val
+
+    def _get_string_val(self):
+        string_val = self.tokenizer.string_val()
+        self.tokenizer.advance()
+        return string_val
+
     def _get_type(self):
         if self.tokenizer.token_is_primitive_type():
             return self._get_keyword()
@@ -346,6 +332,58 @@ class CompilationEngine:
     def _define_var(self, name, varType, kind):
         if not self.symbol_table.kind_of(name):
             self.symbol_table.define(name, varType, kind)
+
+    def _write_var_push(self, var_name):
+        """Writes the operations to push a variable depending on its kind."""
+        var_kind = self.symbol_table.kind_of(var_name)
+        if not var_kind:
+            return
+
+        var_index = self.symbol_table.index_of(var_name)
+        if var_kind == "FIELD":
+            self.vm_writer.write_push("THIS", var_index)
+        elif var_kind == "STATIC":
+            self.vm_writer.write_push("STATIC", var_index)
+        elif var_kind == "LOCAL":
+            self.vm_writer.write_push("LOCAL", var_index)
+        elif var_kind == "ARG":
+            self.vm_writer.write_push("ARGUMENT", var_index)
+
+    def _write_subroutine_call(self, name, returns_void=False):
+        call_name = ""
+        method_name = ""
+        push_pointer = False
+
+        if self.tokenizer.token_matches_value("."):  # Method call.
+            self._get_symbol()  # '.'
+            method_name = self._get_identifier()
+
+        if method_name == "":
+            # Implicit class, equivalent to "self.method()".
+            # Appending the current/local class name to the function,
+            # and pushing the "this" pointer.
+            push_pointer = True
+            self.vm_writer.write_push("POINTER", 0)
+            call_name = "%s.%s" % (self._class_name, name)
+        else:
+            kind = self.symbol_table.kind_of(name)
+            if not kind:  # "name" is a class: call it directly.
+                call_name = "%s.%s" % (name, method_name)
+            else:
+                t = self.symbol_table.type_of(name)  # Get the variable's class.
+                call_name = "%s.%s" % (t, method_name)
+                push_pointer = True  # Push the location to which the variable points.
+                self._write_var_push(name)
+
+        number_of_parameters = self.compile_expression_list()
+
+        if push_pointer:
+            number_of_parameters += 1
+
+        self.vm_writer.write_call(call_name, number_of_parameters)
+
+        if returns_void:  # Void functions return 0. We ignore that value.
+            self.vm_writer.write_pop("TEMP", 0)
 
 
 def main():

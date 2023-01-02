@@ -23,7 +23,6 @@ def main():
 
     if os.path.isdir(sys.argv[1]):
         input_path = sys.argv[1]
-        print("Input path:", input_path)
         compile_files(input_path, xml_output)
     else:
         input_file = sys.argv[1]
