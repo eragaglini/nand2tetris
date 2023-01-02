@@ -1,2 +1,2 @@
-python3 -m pytest -vv -s
-rm *.vm
+echo */
+python3 JackCompiler/JackAnalyzer.py */

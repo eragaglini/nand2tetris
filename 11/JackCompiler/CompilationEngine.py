@@ -23,9 +23,11 @@ class CompilationEngine:
             self.vm_writer = VMWriter.VMWriter(vmFilename)
             self.symbol_table = SymbolTable.SymbolTable()
             self.tokenizer = JackTokenizer.JackTokenizer(inFilename, xml_output)
-            self.root = ET.Element("class")
             self.compile_class()
-
+            # Initializing context variables:
+            self._label_index = 0
+            self._if_index = 0
+            self._while_index = 0
             if xml_output:
                 outFilename = "{}/{}.xml".format(
                     os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
@@ -124,17 +126,17 @@ class CompilationEngine:
                     self._get_symbol()  # (
                     self.compile_expression()
                     self._get_symbol()  # )
+                # unaryOp term
+                if self._token_is_unary_operator():
+                    # unaryOp term
+                    symbol = self._get_symbol()
+                    self.compile_term()
+                    if symbol == "-":
+                        symbol = "neg"
+                    self.vm_writer.write_arithmetic(symbol)
 
     def compile_expression(self):
-        # handling unary operators
-        if self.tokenizer.token_matches_value(
-            "-"
-        ) or self.tokenizer.token_matches_value("~"):
-            self._get_symbol()
-            self.compile_term()
-        else:
-            self.compile_term()
-
+        self.compile_term()
         while self.tokenizer.token_is_operator():
             command = self._get_symbol()
             self.compile_term()
@@ -198,34 +200,59 @@ class CompilationEngine:
         self._write_subroutine_call(subroutine_name)
         self._get_symbol()  # ;
 
-    """
     def compile_if(self):
-        self._write_keyword()  # if
-        self._write_symbol()  # (
+        self._if_index += 1
 
-        self.compile_expression()  # expressions
-        self._write_symbol()  # )
+        self._get_keyword()  # "If"
+        self._get_symbol()  # '('
+        self.compile_expression()  # condition
+        self._get_symbol()  # ')'
+        self.vm_writer.write_arithmetic("~")
 
-        self._write_symbol()  # {
+        false_label = "ifF%d" % self._if_index
+        true_label = "ifT%d" % self._if_index
+        end_if_label = "ifEnd%d" % self._if_index
+
+        self.vm_writer.write_if(false_label)
+
+        self._get_symbol()  # '{'
+        self.vm_writer.write_label(true_label)
+        self.compile_subroutine_statements()  # (...)
+        self.vm_writer.write_goto(end_if_label)
+        self._get_symbol()  # '}'
+
+        self.vm_writer.write_label(false_label)
+        if self.tokenizer.token_matches_value("ELSE"):
+            self._get_keyword()  # "Else"
+            self._get_symbol()  # '{'
+            self.compile_subroutine_statements()  # (...)r
+            self._get_symbol()  # '}'
+
+        self.vm_writer.write_label(end_if_label)
+
+    def compile_while(self):
+        self._while_index += 1
+
+        while_begin_label = "W%d" % self._while_index
+        while_end_label = "Wend%d" % self._while_index
+
+        self.vm_writer.write_label(while_begin_label)
+
+        self._get_keyword()  # "While"
+        self._get_symbol()  # '('
+        self.compile_expression()  # condition
+        self._get_symbol()  # ')'
+
+        # While guard. Negating it and making a goto in case its false:
+        self.vm_writer.write_arithmetic("~")
+        self.vm_writer.write_if(while_end_label)
+
+        self._get_symbol()  # '{'
         self.compile_subroutine_statements()
-        self._write_symbol()  # }
-        if self.tokenizer.token_matches_value("else"):
-            self._write_keyword()  # "Else"
-            self._write_symbol()  # '{'
-            self.compile_subroutine_statements()  # (...)
-            self._write_symbol()  # '}'
+        self._get_symbol()  # '}'
+        self.vm_writer.write_goto(while_begin_label)
 
-    def compile_while(self, statements):
-        self._write_keyword(whileStatement)  # if
-        self._write_symbol(whileStatement)  # (
-
-        self.compile_expression(whileStatement)  # expressions
-        self._write_symbol(whileStatement)  # )
-
-        self._write_symbol(whileStatement)  # {
-        self.compile_subroutine_statements(whileStatement)
-        self._write_symbol(whileStatement)  # }
-    """
+        self.vm_writer.write_label(while_end_label)
 
     def compile_subroutine_statements(self):
         # subroutine body can have differents kinds of statements:
@@ -384,6 +411,9 @@ class CompilationEngine:
 
         if returns_void:  # Void functions return 0. We ignore that value.
             self.vm_writer.write_pop("TEMP", 0)
+
+    def _token_is_unary_operator(self):
+        return self.tokenizer.symbol() in ["-", "~"]
 
 
 def main():

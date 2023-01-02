@@ -45,6 +45,15 @@ class VMWriter:
     def write_call(self, subroutine_name, arguments):
         self._output.write("call {} {}\n".format(subroutine_name, arguments))
 
+    def write_label(self, label):
+        self._output.write("label %s\n" % label)
+
+    def write_goto(self, label):
+        self._output.write("goto %s\n" % label)
+
+    def write_if(self, label):
+        self._output.write("if-goto %s\n" % label)
+
     def write_string(self, string):
         # we create a string object by pushing onto the stack the length of
         # the string and then by calling the string constructor with it as
