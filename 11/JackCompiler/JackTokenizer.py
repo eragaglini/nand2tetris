@@ -3,10 +3,7 @@ import re
 import ntpath
 import xml.etree.ElementTree as ET
 
-try:
-    import utils
-except ImportError:
-    from . import utils
+import utils
 
 # String constants:
 # TOKEN_TYPES = ["KEYWORD", "SYMBOL", "IDENTIFIER", "INT_CONST", "STRING_CONST"]

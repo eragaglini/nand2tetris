@@ -1,19 +1,9 @@
 import sys
 import os
-import ntpath
-import xml.etree.cElementTree as ET
-import pdb
 
-try:
-    import VMWriter
-    import JackTokenizer
-    import SymbolTable
-    import utils
-except ImportError:
-    from . import VMWriter
-    from . import JackTokenizer
-    from . import SymbolTable
-    from . import utils
+import VMWriter
+import JackTokenizer
+import SymbolTable
 
 
 class CompilationEngine:
@@ -28,15 +18,6 @@ class CompilationEngine:
             self._if_index = 0
             self._while_index = 0
             self.compile_class()
-            if xml_output:
-                outFilename = "{}/{}.xml".format(
-                    os.getcwd(), self.path_leaf(inFilename).rsplit(".", 1)[0]
-                )
-                utils.generate_xml_file(self.root, outFilename)
-
-    def path_leaf(self, path):
-        head, tail = ntpath.split(path)
-        return tail or ntpath.basename(head)
 
     def compile_var_dec(self):
         nLocals = 0
@@ -221,7 +202,8 @@ class CompilationEngine:
         self._get_symbol()  # '}'
 
         self.vm_writer.write_label(false_label)
-        if self.tokenizer.token_matches_value("ELSE"):
+        if self.tokenizer.token_matches_value("else"):
+            print("eccoci")
             self._get_keyword()  # "Else"
             self._get_symbol()  # '{'
             self.compile_subroutine_statements()  # (...)r
@@ -273,18 +255,22 @@ class CompilationEngine:
                 self.compile_while()
 
     def compile_subroutine(self):
+        self.symbol_table.starts_subroutine()
         # function signature
-        self._get_keyword()  # constructor, method of function
-        self._get_type()  # Return type
+        subroutine_type = self._get_keyword()  # constructor, method of function
+        return_type = self._get_type()  # Return type
         subroutine_name = self._get_identifier()  # subroutine identifier
-        self._get_symbol()  # '('
 
+        if subroutine_type == "METHOD":
+            self._define_var("this_ptr", "INT", "ARG")
+
+        self._get_symbol()  # '('
         # parameter list
         self.compile_parameter_list()
-
         self._get_symbol()  # ')'
         self._get_symbol()  # '{'
 
+        # subroutine body
         nLocals = 0
         # function variable definitions
         while self.tokenizer.keyword() == "VAR":
@@ -296,13 +282,32 @@ class CompilationEngine:
             "{}.{}".format(self._class_name, subroutine_name), nLocals
         )
 
+        if subroutine_type == "METHOD":
+            # Argument 0 of a constructor is the this pointer.
+            # The first thing the function does is move it to the pointer register.
+            self.vm_writer.write_push("ARGUMENT", 0)
+            self.vm_writer.write_pop("POINTER", 0)
+
+        elif subroutine_type == "CONSTRUCTOR":
+            # If it is a method, invoke the OS functions to allocate space.
+            self.vm_writer.write_alloc(self.symbol_table.var_count("FIELD"))
+            # Then we set the this pointer to the assigned space.
+            self.vm_writer.write_pop("POINTER", 0)
+
         # function body can be comprised of variable declaration and statements
-        # Body:
         # function statements
         if not self.tokenizer.token_matches_value("}"):
             self.compile_subroutine_statements()
 
         self._get_symbol()  # '}' (end of subroutine body.)
+
+        # End of subroutine body.
+        # If the return type is void, we need to push some value.
+        # That way the caller can always pop at least one value.
+        if return_type == "VOID":
+            self.vm_writer.write_push("constant", 0)
+
+        self.vm_writer.write_return()
 
     def compile_class(self):
         self._get_keyword()  # "Class"

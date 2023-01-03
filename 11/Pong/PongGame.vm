@@ -1,0 +1,241 @@
+function PongGame.new 0
+push constant 7
+call Memory.alloc 1
+pop pointer 0
+call Screen.clearScreen 0
+push constant 50
+push constant 230
+push constant 229
+push constant 7
+call Bat.new 4
+push constant 253
+push constant 222
+push constant 0
+push constant 511
+push constant 0
+push constant 229
+call Ball.new 6
+push constant 400
+push constant 0
+call Ball.setDestination 3
+push constant 0
+push constant 238
+push constant 511
+push constant 240
+call Screen.drawRectangle 4
+push constant 22
+push constant 0
+call Output.moveCursor 2
+push constant 8
+call String.new 1
+push constant 83
+call String.appendChar 2
+push constant 99
+call String.appendChar 2
+push constant 111
+call String.appendChar 2
+push constant 114
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 58
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 48
+call String.appendChar 2
+call Output.printString 1
+push constant 0
+push constant 0
+push constant 0
+push constant 0
+push pointer 0
+return
+function PongGame.dispose 0
+push argument 0
+pop pointer 0
+call Bat.dispose 1
+call Ball.dispose 1
+push pointer 0
+call Memory.deAlloc 1
+push constant 0
+return
+function PongGame.newInstance 0
+call PongGame.new 0
+push constant 0
+return
+function PongGame.getInstance 0
+return
+function PongGame.run 1
+push argument 0
+pop pointer 0
+label W1
+not
+not
+if-goto Wend1
+label W2
+push constant 0
+eq
+not
+and
+not
+if-goto Wend2
+call Keyboard.keyPressed 0
+call Bat.move 1
+push pointer 0
+call PongGame.moveBall 1
+push constant 50
+call Sys.wait 1
+goto W2
+label Wend2
+push constant 130
+eq
+not
+if-goto ifF1
+label ifT1
+push constant 1
+call Bat.setDirection 2
+goto ifEnd1
+label ifF1
+push constant 132
+eq
+not
+if-goto ifF2
+label ifT2
+push constant 2
+call Bat.setDirection 2
+goto ifEnd2
+label ifF2
+push constant 140
+eq
+not
+if-goto ifF3
+label ifT3
+push constant 0
+not
+goto ifEnd3
+label ifF3
+label ifEnd3
+label ifEnd2
+label ifEnd1
+label W3
+push constant 0
+eq
+not
+not
+and
+not
+if-goto Wend3
+call Keyboard.keyPressed 0
+call Bat.move 1
+push pointer 0
+call PongGame.moveBall 1
+push constant 50
+call Sys.wait 1
+goto W3
+label Wend3
+goto W1
+label Wend1
+not
+if-goto ifF4
+label ifT4
+push constant 10
+push constant 27
+call Output.moveCursor 2
+push constant 9
+call String.new 1
+push constant 71
+call String.appendChar 2
+push constant 97
+call String.appendChar 2
+push constant 109
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 79
+call String.appendChar 2
+push constant 118
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 114
+call String.appendChar 2
+call Output.printString 1
+goto ifEnd4
+label ifF4
+label ifEnd4
+push constant 0
+return
+function PongGame.moveBall 5
+push argument 0
+pop pointer 0
+call Ball.move 1
+push constant 0
+gt
+eq
+not
+and
+not
+if-goto ifF5
+label ifT5
+push constant 0
+call Bat.getLeft 1
+call Bat.getRight 1
+call Ball.getLeft 1
+call Ball.getRight 1
+push constant 4
+eq
+not
+if-goto ifF6
+label ifT6
+gt
+lt
+or
+not
+not
+if-goto ifF7
+label ifT7
+push constant 10
+add
+lt
+not
+if-goto ifF8
+label ifT8
+push constant 1
+neg
+goto ifEnd8
+label ifF8
+push constant 10
+sub
+gt
+not
+if-goto ifF9
+label ifT9
+push constant 1
+goto ifEnd9
+label ifF9
+label ifEnd9
+label ifEnd8
+push constant 2
+sub
+call Bat.setWidth 2
+push constant 1
+add
+push constant 22
+push constant 7
+call Output.moveCursor 2
+call Output.printInt 1
+goto ifEnd7
+label ifF7
+label ifEnd7
+goto ifEnd6
+label ifF6
+label ifEnd6
+call Ball.bounce 2
+goto ifEnd5
+label ifF5
+label ifEnd5
+push constant 0
+return

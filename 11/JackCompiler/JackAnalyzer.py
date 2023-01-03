@@ -2,10 +2,7 @@
 import sys
 import os
 
-try:
-    from . import CompilationEngine
-except:
-    import CompilationEngine
+import CompilationEngine
 
 
 def main():

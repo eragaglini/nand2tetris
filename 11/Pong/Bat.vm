@@ -1,0 +1,137 @@
+function Bat.new 0
+push constant 5
+call Memory.alloc 1
+pop pointer 0
+push constant 2
+push pointer 0
+call Bat.show 1
+push pointer 0
+return
+function Bat.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+push constant 0
+return
+function Bat.show 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+push pointer 0
+call Bat.draw 1
+push constant 0
+return
+function Bat.hide 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+push pointer 0
+call Bat.draw 1
+push constant 0
+return
+function Bat.draw 0
+push argument 0
+pop pointer 0
+add
+add
+call Screen.drawRectangle 4
+push constant 0
+return
+function Bat.setDirection 0
+push argument 0
+pop pointer 0
+push constant 0
+return
+function Bat.getLeft 0
+push argument 0
+pop pointer 0
+return
+function Bat.getRight 0
+push argument 0
+pop pointer 0
+add
+return
+function Bat.setWidth 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Bat.hide 1
+push pointer 0
+call Bat.show 1
+push constant 0
+return
+function Bat.move 0
+push argument 0
+pop pointer 0
+push constant 1
+eq
+not
+if-goto ifF1
+label ifT1
+push constant 4
+sub
+push constant 0
+lt
+not
+if-goto ifF2
+label ifT2
+push constant 0
+goto ifEnd2
+label ifF2
+label ifEnd2
+push constant 0
+call Screen.setColor 1
+add
+push constant 1
+add
+add
+push constant 4
+add
+add
+call Screen.drawRectangle 4
+push constant 0
+not
+call Screen.setColor 1
+push constant 3
+add
+add
+call Screen.drawRectangle 4
+goto ifEnd1
+label ifF1
+push constant 4
+add
+add
+push constant 511
+gt
+not
+if-goto ifF3
+label ifT3
+push constant 511
+sub
+goto ifEnd3
+label ifF3
+label ifEnd3
+push constant 0
+call Screen.setColor 1
+push constant 4
+sub
+push constant 1
+sub
+add
+call Screen.drawRectangle 4
+push constant 0
+not
+call Screen.setColor 1
+add
+push constant 3
+neg
+add
+add
+call Screen.drawRectangle 4
+label ifEnd1
+push constant 0
+return

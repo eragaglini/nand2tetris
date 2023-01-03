@@ -68,3 +68,11 @@ class VMWriter:
             unicode_rep = ord(char)
             self.write_push("CONSTANT", unicode_rep)
             self.write_call("String.appendChar", 2)
+
+    # calling Memory.alloc to allocate a memory segment of size the ram
+    def write_alloc(self, size):
+        self.write_push("CONSTANT", size)
+        self._output.write("call Memory.alloc 1\n")
+
+    def write_return(self):
+        self._output.write("return\n")

@@ -1,0 +1,284 @@
+function Ball.new 0
+push constant 15
+call Memory.alloc 1
+pop pointer 0
+push constant 6
+sub
+push constant 6
+sub
+push constant 0
+push pointer 0
+call Ball.show 1
+push pointer 0
+return
+function Ball.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+push constant 0
+return
+function Ball.show 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+push pointer 0
+call Ball.draw 1
+push constant 0
+return
+function Ball.hide 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+push pointer 0
+call Ball.draw 1
+push constant 0
+return
+function Ball.draw 0
+push argument 0
+pop pointer 0
+push constant 5
+add
+push constant 5
+add
+call Screen.drawRectangle 4
+push constant 0
+return
+function Ball.getLeft 0
+push argument 0
+pop pointer 0
+return
+function Ball.getRight 0
+push argument 0
+pop pointer 0
+push constant 5
+add
+return
+function Ball.setDestination 3
+push argument 0
+pop pointer 0
+sub
+sub
+call Math.abs 1
+call Math.abs 1
+lt
+not
+if-goto ifF1
+label ifT1
+lt
+lt
+goto ifEnd1
+label ifF1
+lt
+lt
+label ifEnd1
+push constant 2
+call Math.multiply 2
+neg
+push constant 2
+call Math.multiply 2
+push constant 2
+sub
+call Math.multiply 2
+push constant 0
+return
+function Ball.move 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Ball.hide 1
+push constant 0
+lt
+not
+if-goto ifF2
+label ifT2
+add
+goto ifEnd2
+label ifF2
+add
+not
+if-goto ifF3
+label ifT3
+not
+if-goto ifF4
+label ifT4
+push constant 4
+add
+goto ifEnd4
+label ifF4
+push constant 4
+add
+label ifEnd4
+goto ifEnd3
+label ifF3
+not
+if-goto ifF5
+label ifT5
+push constant 4
+sub
+goto ifEnd5
+label ifF5
+push constant 4
+sub
+label ifEnd5
+label ifEnd3
+label ifEnd2
+not
+if-goto ifF6
+label ifT6
+not
+if-goto ifF7
+label ifT7
+push constant 4
+add
+goto ifEnd7
+label ifF7
+push constant 4
+add
+label ifEnd7
+goto ifEnd6
+label ifF6
+not
+if-goto ifF8
+label ifT8
+push constant 4
+sub
+goto ifEnd8
+label ifF8
+push constant 4
+sub
+label ifEnd8
+label ifEnd6
+gt
+not
+not
+if-goto ifF9
+label ifT9
+push constant 1
+goto ifEnd9
+label ifF9
+label ifEnd9
+lt
+not
+not
+if-goto ifF10
+label ifT10
+push constant 2
+goto ifEnd10
+label ifF10
+label ifEnd10
+gt
+not
+not
+if-goto ifF11
+label ifT11
+push constant 3
+goto ifEnd11
+label ifF11
+label ifEnd11
+lt
+not
+not
+if-goto ifF12
+label ifT12
+push constant 4
+goto ifEnd12
+label ifF12
+label ifEnd12
+push pointer 0
+call Ball.show 1
+return
+function Ball.bounce 5
+push argument 0
+pop pointer 0
+push constant 10
+call Math.divide 2
+push constant 10
+call Math.divide 2
+push constant 0
+eq
+not
+if-goto ifF13
+label ifT13
+push constant 10
+goto ifEnd13
+label ifF13
+push constant 0
+lt
+not
+push constant 1
+eq
+and
+push constant 0
+lt
+push constant 1
+neg
+eq
+and
+or
+not
+if-goto ifF14
+label ifT14
+push constant 20
+goto ifEnd14
+label ifF14
+push constant 5
+label ifEnd14
+label ifEnd13
+push constant 1
+eq
+not
+if-goto ifF15
+label ifT15
+push constant 506
+push constant 50
+neg
+call Math.multiply 2
+call Math.divide 2
+call Math.multiply 2
+add
+goto ifEnd15
+label ifF15
+push constant 2
+eq
+not
+if-goto ifF16
+label ifT16
+push constant 0
+push constant 50
+call Math.multiply 2
+call Math.divide 2
+call Math.multiply 2
+add
+goto ifEnd16
+label ifF16
+push constant 3
+eq
+not
+if-goto ifF17
+label ifT17
+push constant 250
+push constant 25
+neg
+call Math.multiply 2
+call Math.divide 2
+call Math.multiply 2
+add
+goto ifEnd17
+label ifF17
+push constant 0
+push constant 25
+call Math.multiply 2
+call Math.divide 2
+call Math.multiply 2
+add
+label ifEnd17
+label ifEnd16
+label ifEnd15
+push pointer 0
+call Ball.setDestination 3
+push constant 0
+return
